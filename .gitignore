@@ -1,0 +1,8 @@
+.idea
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeFiles
+lib
+shader
+build
