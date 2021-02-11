@@ -1,5 +1,6 @@
 # OBJ View with Subdivision
 The project was done for the Computer Graphics course. Loop sub-division is implemented using the Winged Edge data structure.
+![preview](doc/preview.png)
 
 ## How to compile and run the code?
 1) Run `git submodule update --init --recursive`.
