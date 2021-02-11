@@ -2,7 +2,7 @@
 The project was done for the Computer Graphics course. Loop sub-division is implemented using the Winged Edge data structure.
 
 ## How to compile and run the code?
-1) Copy `lib` directory and `shader` directory from provided demo project, to the root of this project.
+1) Run `git submodule update --init --recursive`.
 2) Compile and run the code as follows.
     ```bash
     mkdir build
