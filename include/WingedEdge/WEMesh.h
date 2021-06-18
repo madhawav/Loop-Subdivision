@@ -8,8 +8,7 @@
 #include "Vertex.h"
 #include "Face.h"
 #include <nanogui/common.h>
-
-class OBJMesh;
+#include "OBJMesh.h"
 
 /**
  *  Class used to hold WingedEdge representation of a Mesh.
@@ -49,51 +48,57 @@ public:
      * Fill vertices and faces matrix of provided objMesh using the information available in WingedEdge structure.
      * @param objMesh
      */
-    void fillOBJMesh(OBJMesh* objMesh);
+    void fillOBJMesh(OBJMesh* objMesh) const;
+
+    /**
+     * Check whether a model is loaded.
+     * @return True if model is loaded. Otherwise false.
+     */
+    bool isModelLoaded() const;
 
     /**
      * Returns minimum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
      * @return
      */
-    nanogui::Vector3f getMinPoint();
+    nanogui::Vector3f getMinPoint() const;
 
     /**
      * Returns maximum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
      * @return
      */
-    nanogui::Vector3f getMaxPoint();
+    nanogui::Vector3f getMaxPoint() const;
 
     /**
      * Returns matrix of normals used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
      * @return
      */
-    nanogui::MatrixXf getNormalMatrix();
+    nanogui::MatrixXf getNormalMatrix() const;
 
     /**
      * Returns matrix of vertices used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
      * @return
      */
-    nanogui::MatrixXf getVertexMatrix();
+    nanogui::MatrixXf getVertexMatrix() const;
 
     /**
      * Returns matrix of faces used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
      * @return
      */
-    nanogui::MatrixXu getFaceMatrix();
+    nanogui::MatrixXu getFaceMatrix() const;
 
     /**
      * Returns matrix of vertices used for rendering wireframes on top of solid mesh. Populated by populateExpandedVertexMatrix.
      * @return
      */
-    nanogui::MatrixXf getExpandedVertexMatrix(); //For drawing wireframe on top of smooth shading
+    nanogui::MatrixXf getExpandedVertexMatrix() const;
 
-    Vertex* getVertices();
-    Edge* getEdges();
-    Face* getFaces();
+    Vertex* getVertices() const;
+    Edge* getEdges() const;
+    Face* getFaces() const;
 
-    int getVertexCount();
-    int getEdgeCount();
-    int getFaceCount();
+    int getVertexCount() const;
+    int getEdgeCount() const;
+    int getFaceCount() const;
 
     void allocateVertices(int v);
     void allocateEdges(int e);
@@ -121,8 +126,10 @@ private:
     nanogui::MatrixXf mExpandedVertexMatrix;
 
     // Used to avoid re-calculations
-    bool isSmoothedShaded = false;
-    bool isFlatShaded = false;
+    bool mSmoothedShaded;
+    bool mFlatShaded;
+
+    bool mModelLoaded;
 };
 
 

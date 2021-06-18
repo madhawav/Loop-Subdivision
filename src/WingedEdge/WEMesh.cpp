@@ -24,6 +24,9 @@ WEMesh::WEMesh() {
     mVertexCount = 0;
     mFaceCount = 0;
     mEdgeCount = 0;
+    mSmoothedShaded = false;
+    mFlatShaded = false;
+    mModelLoaded = false;
 }
 
 /**
@@ -43,12 +46,13 @@ bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
     mNormalMatrix = nanogui::MatrixXf(3, 0);
     mExpandedVertexMatrix = nanogui::MatrixXf(3,0);
 
-    isSmoothedShaded = false;
-    isFlatShaded = false;
+    mSmoothedShaded = false;
+    mFlatShaded = false;
 
     delete[] mVertices;
     delete[] mEdges;
     delete[] mFaces;
+    mModelLoaded = false;
 
     mVertexCount = vertices.cols();
     mFaceCount = faces.cols();
@@ -171,26 +175,33 @@ bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
         delete[] vertexPairEdgeArray[i];
     }
     delete[] vertexPairEdgeArray;
+
+    mModelLoaded = true;
     return true;
 }
 
-nanogui::Vector3f WEMesh::getMinPoint() {
+nanogui::Vector3f WEMesh::getMinPoint() const {
+    assert(mModelLoaded);
     return mMinPoint;
 }
 
-nanogui::Vector3f WEMesh::getMaxPoint() {
+nanogui::Vector3f WEMesh::getMaxPoint() const {
+    assert(mModelLoaded);
     return mMaxPoint;
 }
 
-nanogui::MatrixXu WEMesh::getFaceMatrix() {
+nanogui::MatrixXu WEMesh::getFaceMatrix() const {
+    assert(mModelLoaded);
     return mFaceMatrix;
 }
 
-nanogui::MatrixXf WEMesh::getVertexMatrix() {
+nanogui::MatrixXf WEMesh::getVertexMatrix() const {
+    assert(mModelLoaded);
     return mVertexMatrix;
 }
 
-nanogui::MatrixXf WEMesh::getNormalMatrix() {
+nanogui::MatrixXf WEMesh::getNormalMatrix() const {
+    assert(mModelLoaded);
     return mNormalMatrix;
 }
 
@@ -199,7 +210,9 @@ nanogui::MatrixXf WEMesh::getNormalMatrix() {
  * @return True if success
  */
 bool WEMesh::populateSmoothShadingMatrices() {
-    if(isSmoothedShaded)
+    assert(mModelLoaded);
+
+    if(mSmoothedShaded)
         return true;
 
     // Initialize matrices
@@ -276,8 +289,8 @@ bool WEMesh::populateSmoothShadingMatrices() {
     {
         mNormalMatrix.col(i) << (mNormalMatrix.col(i) / adjacentFaceCount[i]).normalized();
     }
-    isSmoothedShaded = true;
-    isFlatShaded = false;
+    mSmoothedShaded = true;
+    mFlatShaded = false;
 
     delete[] adjacentFaceCount;
     return true;
@@ -288,7 +301,9 @@ bool WEMesh::populateSmoothShadingMatrices() {
  * @return True if success
  */
 bool WEMesh::populateFlatShadingMatrices() {
-    if(isFlatShaded)
+    assert(mModelLoaded);
+
+    if(mFlatShaded)
         return true;
 
     // Initialize matrices
@@ -350,8 +365,8 @@ bool WEMesh::populateFlatShadingMatrices() {
         vertexIndex+=3;
 
     }
-    isSmoothedShaded = false;
-    isFlatShaded = true;
+    mSmoothedShaded = false;
+    mFlatShaded = true;
     return true;
 }
 
@@ -365,7 +380,9 @@ WEMesh::~WEMesh() {
  * Fill vertices and faces matrix of provided objMesh using the information available in WingedEdge structure.
  * @param objMesh
  */
-void WEMesh::fillOBJMesh(OBJMesh * objMesh) {
+void WEMesh::fillOBJMesh(OBJMesh * objMesh) const {
+    assert(mModelLoaded);
+
     nanogui::MatrixXf vertexMatrix =  nanogui::MatrixXf(3, mVertexCount);
     nanogui::MatrixXu faceMatrix = nanogui::MatrixXu(3, mFaceCount);
 
@@ -416,7 +433,7 @@ void WEMesh::fillOBJMesh(OBJMesh * objMesh) {
     objMesh->setMatrices(vertexMatrix, faceMatrix);
 }
 
-nanogui::MatrixXf WEMesh::getExpandedVertexMatrix() {
+nanogui::MatrixXf WEMesh::getExpandedVertexMatrix() const {
     return mExpandedVertexMatrix;
 }
 
@@ -431,27 +448,27 @@ void WEMesh::populateExpandedVertexMatrix(float epsilon) {
     }
 }
 
-Vertex *WEMesh::getVertices() {
+Vertex *WEMesh::getVertices() const {
     return mVertices;
 }
 
-Edge *WEMesh::getEdges() {
+Edge *WEMesh::getEdges() const {
     return mEdges;
 }
 
-Face *WEMesh::getFaces() {
+Face *WEMesh::getFaces() const {
     return mFaces;
 }
 
-int WEMesh::getVertexCount() {
+int WEMesh::getVertexCount() const {
     return mVertexCount;
 }
 
-int WEMesh::getEdgeCount() {
+int WEMesh::getEdgeCount() const {
     return mEdgeCount;
 }
 
-int WEMesh::getFaceCount() {
+int WEMesh::getFaceCount() const {
     return mFaceCount;
 }
 
@@ -469,4 +486,8 @@ void WEMesh::allocateFaces(int f){
     delete[] mFaces;
     mFaceCount = f;
     mFaces = new Face[mFaceCount];
+}
+
+bool WEMesh::isModelLoaded() const {
+    return mModelLoaded;
 }
