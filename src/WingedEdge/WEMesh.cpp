@@ -69,8 +69,9 @@ void WEMesh::unloadModel() {
  * @return true if success
  */
 bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
+#ifdef LOG_EXTRA
     std::cout << std::endl << "Populating Winged Edge" <<std::endl;
-
+#endif
     unloadModel();
 
     mVertexCount = vertices.cols();
@@ -183,12 +184,14 @@ bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
 
 
     }
+#ifdef LOG_EXTRA
     std::cout << std::endl << "Winged Edge Populated" <<std::endl;
     std::cout << "Winged Edge: Actual Edge Count: "<< edgeCount << std::endl;
     std::cout << "Winged Edge: Expected Edge Count (Face Count * 3 / 2): "<< mFaceCount*3/2 << std::endl;
 
     std::cout << "Min Point: "<< mMinPoint[0] << ", " << mMinPoint[1] << ", " << mMinPoint[2] << std::endl;
     std::cout << "Max Point: "<< mMaxPoint[0] << ", " << mMaxPoint[1] << ", " << mMaxPoint[2] << std::endl;
+#endif
 
     for(int i = 0; i < mVertexCount; i++){
         delete[] vertexPairEdgeArray[i];

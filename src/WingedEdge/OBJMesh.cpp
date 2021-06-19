@@ -38,7 +38,9 @@ bool WingedEdge::OBJMesh::parseFile(std::ifstream* fs) {
     // Reserve memory
     mVertices = nanogui::MatrixXf(3, mVertexCount);
     mFaces = nanogui::MatrixXu(3, mFaceCount);
-    std::cout << mVertexCount << " " << mFaceCount << std::endl;
+#ifdef LOG_EXTRA
+    std::cout << "Vertex Count: " << mVertexCount << "\t Edge Count: " << mFaceCount << std::endl;
+#endif
 
     int vertexIndex = 0;
     int faceIndex = 0;
@@ -55,7 +57,9 @@ bool WingedEdge::OBJMesh::parseFile(std::ifstream* fs) {
             float px, py, pz;
             sscanf(line, "v %f %f %f", &px, &py, &pz);
             mVertices.col( vertexIndex++) << nanogui::Vector3f(px, py, pz);
+#ifdef LOG_EXTRA
             std::cout << "Loaded vertex: " << px << " " << py << " " << pz << std::endl;
+#endif
         }
         else if(line[0] == "f"[0])
         {
@@ -63,11 +67,15 @@ bool WingedEdge::OBJMesh::parseFile(std::ifstream* fs) {
             int v1, v2, v3;
             sscanf(line, "f %d %d %d", &v1, &v2, &v3);
             mFaces.col( faceIndex++ ) << v1-1, v2-1, v3-1;
+#ifdef LOG_EXTRA
             std::cout << "Face added: " << v1 << " " << v2 << " " << v3 << std::endl;
+#endif
         }
     }
 
+#ifdef LOG_EXTRA
     std::cout << "Vertex Matrix " << mVertices.rows() << " x " << mVertices.cols() << std::endl;
+#endif
     return true;
 
 }
@@ -100,12 +108,11 @@ void WingedEdge::OBJMesh::setMatrices(nanogui::MatrixXf vertices, nanogui::Matri
 
 /**
  * Saves mesh as an obj file.
- * @param fs
- * @return
+ * @param fs Output file stream
+ * @return True if success. Otherwise false.
  */
 bool WingedEdge::OBJMesh::saveFile(std::ofstream *fs) {
-    std::cout << "Saving obj" << std::endl;
-    // Save metadeta
+    // Save metadata
     *fs << "# " << mVertexCount << " " << mFaceCount << std::endl;
 
     // Save vertices

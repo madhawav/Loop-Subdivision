@@ -8,6 +8,8 @@
 #include <WingedEdge/OBJMesh.h>
 #include <Subdivision/Subdivision.h>
 
+// Uncomment to do extra logging
+//#define LOG_EXTRA
 
 /**
  * Each edge of source edge is represented by two edges in the resultant mesh of loop subdivision.
@@ -235,8 +237,10 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
                     assert(false);
                 }
             }
+#ifdef LOG_EXTRA
             std::cout << "Adjacent Edge Count " << adjacentEdgeCount << std::endl;
             std::cout << "Neighbour " << neighbourX << " "<< neighbourY << " " << neighbourZ << std::endl;
+#endif
             float k = adjacentEdgeCount;
 
             // Beta calculation
@@ -351,6 +355,7 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
 
                 addedVertexCount++;
                 addedEdgeCount += 2;
+#ifdef LOG_EXTRA
                 std::cout << "Divided edge [" << edgesCW[e]->mVertOrigin->getX() << " " << edgesCW[e]->mVertOrigin->getY()  << " " << edgesCW[e]->mVertOrigin->getZ() <<
                           "<< - >>" << edgesCW[e]->mVertDest->getX() << " " << edgesCW[e]->mVertDest->getY()  << " " << edgesCW[e]->mVertDest->getZ() <<
                           "] as [" << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getY() <<
@@ -359,6 +364,7 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
                           extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getY() <<
                           ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getZ() << " << >> " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getX() << ", "
                           << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getY() <<", " << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getZ()<< std::endl;
+#endif
             }
         }
 
@@ -370,8 +376,9 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
     for(int _v = 0; _v < newVertexCount; _v++){
         assert(targetMesh->getVertices()[_v].getEdge() != nullptr);
     }
+#ifdef LOG_EXTRA
     std::cout << "Added vertices " << addedVertexCount << " Total should be " << newVertexCount << std::endl;
-
+#endif
     //Now all the vertices are in place. Now lets subdivide faces, adding the internal edges.
     for(int f = 0; f < sourceMesh->getFaceCount(); f++) {
         // identify 3 edges of the face in CW order
@@ -409,11 +416,15 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
         targetMesh->getEdges()[addedEdgeCount].mVertDest = currentExtendedFace->extendedEdge1->newEdgeS->mVertDest;
         currentExtendedFace->internalEdge31 = &(targetMesh->getEdges()[addedEdgeCount]);
         addedEdgeCount++;
-        //        std::cout << "Edges added " << addedEdgeCount << " " << newEdgeCount << std::endl;
+#ifdef LOG_EXTRA
+        std::cout << "Edges added " << addedEdgeCount << " " << newEdgeCount << std::endl;
+#endif
     }
 
     assert(addedEdgeCount == newEdgeCount);
+#ifdef LOG_EXTRA
     std::cout << "Edges added " << addedEdgeCount << "/" << newEdgeCount << std::endl;
+#endif
 
     // Identify triangles in subdivided mesh, so we can generate face indices of a triangular mesh
     nanogui::MatrixXu faceIndices(3, newFaceCount);
@@ -452,7 +463,9 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh
             WingedEdge::Vertex* c1 = getCommonVertex(party1Part[k], party2Part[k]);
             WingedEdge::Vertex* c2 = getCommonVertex(party2Part[k], diagonalParty[k]);
             WingedEdge::Vertex* c3 = getCommonVertex(diagonalParty[k], party1Part[k]);
+#ifdef LOG_EXTRA
             std::cout << "Face: " << c1 - targetMesh->getVertices() << ", " << c2 - targetMesh->getVertices() << ", " << c3-targetMesh->getVertices() << std::endl;
+#endif
             faceIndices.col(addedFaceCount++) << c3- targetMesh->getVertices(), c2- targetMesh->getVertices(), c1- targetMesh->getVertices();
         }
         WingedEdge::Vertex* d1 = getCommonVertex(diagonalParty[0], diagonalParty[1]);
