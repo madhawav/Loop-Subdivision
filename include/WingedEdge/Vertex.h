@@ -3,98 +3,100 @@
 //
 
 #ifndef NANOGUI_TEST_VERTEX_H
-#define NANOGUI_TEST_VERTEX_H
 
 #include <nanogui/common.h>
 
-class Edge;
-
-/**
- * WingedEdge Vertex definition according to the Wikipedia article https://en.wikipedia.org/wiki/Winged_edge
- */
-class Vertex {
-private:
-    nanogui::Vector3f mPosition;
-    Edge* mEdge;
-
-public:
-    /**
-     * Construct a vertex with specified coordinates
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param z Z coordinate
-     */
-    Vertex(float x, float y, float z);
+namespace WingedEdge {
+#define NANOGUI_TEST_VERTEX_H
+    class Edge;
 
     /**
-     * Construct a vertex with coordinates (0,0,0)
-     */
-    Vertex();
+    * WingedEdge Vertex definition according to the Wikipedia article https://en.wikipedia.org/wiki/Winged_edge
+    */
+    class Vertex {
+    private:
+        nanogui::Vector3f mPosition;
+        Edge *mEdge;
 
-    /**
-     * Returns X coordinate
-     * @return
-     */
-    float getX();
+    public:
+        /**
+         * Construct a vertex with specified coordinates
+         * @param x X coordinate
+         * @param y Y coordinate
+         * @param z Z coordinate
+         */
+        Vertex(float x, float y, float z);
 
-    /**
-     * Returns Y coordinate
-     * @return
-     */
-    float getY();
+        /**
+         * Construct a vertex with coordinates (0,0,0)
+         */
+        Vertex();
 
-    /**
-     * Returns Z coordinate
-     * @return
-     */
-    float getZ();
+        /**
+         * Returns X coordinate
+         * @return
+         */
+        float getX();
 
-    /**
-     * Sets X coordinate
-     * @param x
-     */
-    void setX(float x);
+        /**
+         * Returns Y coordinate
+         * @return
+         */
+        float getY();
 
-    /**
-     * Sets Y coordinate
-     * @param y
-     */
-    void setY(float y);
+        /**
+         * Returns Z coordinate
+         * @return
+         */
+        float getZ();
 
-    /**
-     * Sets Z coordinate
-     * @param z
-     */
-    void setZ(float z);
+        /**
+         * Sets X coordinate
+         * @param x
+         */
+        void setX(float x);
 
-    /**
-     * Retrieve position
-     * @return
-     */
-    nanogui::Vector3f getPosition();
+        /**
+         * Sets Y coordinate
+         * @param y
+         */
+        void setY(float y);
 
-    /**
-     * Set position
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param z Z coordinate
-     */
-    void setPosition(float x,float y, float z);
+        /**
+         * Sets Z coordinate
+         * @param z
+         */
+        void setZ(float z);
 
-    void setPosition(nanogui::Vector3f pos);
+        /**
+         * Retrieve position
+         * @return
+         */
+        nanogui::Vector3f getPosition();
 
-    /**
-     * Retrieve an adjacent edge
-     * @return
-     */
-    Edge* getEdge();
+        /**
+         * Set position
+         * @param x X coordinate
+         * @param y Y coordinate
+         * @param z Z coordinate
+         */
+        void setPosition(float x, float y, float z);
 
-    /**
-     * Set an adjacent edge
-     * @param nEdge
-     */
-    void setEdge(Edge* nEdge);
-};
+        void setPosition(nanogui::Vector3f pos);
+
+        /**
+         * Retrieve an adjacent edge
+         * @return
+         */
+        Edge *getEdge();
+
+        /**
+         * Set an adjacent edge
+         * @param nEdge
+         */
+        void setEdge(Edge *nEdge);
+    };
+}
 
 
 #endif //NANOGUI_TEST_VERTEX_H

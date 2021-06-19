@@ -3,15 +3,16 @@
 //
 
 #include <WingedEdge/Face.h>
+#include <WingedEdge/Edge.h>
 
-Edge *Face::getEdge() {
+WingedEdge::Edge * WingedEdge::Face::getEdge() {
     return mEdge;
 }
 
-void Face::setEdge(Edge *nEdge) {
+void WingedEdge::Face::setEdge(WingedEdge::Edge *nEdge) {
     mEdge = nEdge;
 }
 
-Face::Face() {
+WingedEdge::Face::Face() {
     mEdge = nullptr;
 }

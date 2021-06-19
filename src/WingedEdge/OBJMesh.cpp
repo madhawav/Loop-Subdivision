@@ -4,10 +4,10 @@
 
 #include <iostream>
 #include <cstring>
-#include <sstream>
+#include <nanogui/common.h>
 #include <WingedEdge/OBJMesh.h>
 
-OBJMesh::OBJMesh() {
+WingedEdge::OBJMesh::OBJMesh() {
     mVertexCount = 0;
     mFaceCount = 0;
     mVertices = nanogui::MatrixXf(3,0);
@@ -19,7 +19,7 @@ OBJMesh::OBJMesh() {
  * @param fs Input stream from obj file
  * @return true if success
  */
-bool OBJMesh::parseFile(std::ifstream* fs) {
+bool WingedEdge::OBJMesh::parseFile(std::ifstream* fs) {
     char line[100]; // Buffer for reading purpose
     memset(line,0, sizeof(line));
 
@@ -72,26 +72,26 @@ bool OBJMesh::parseFile(std::ifstream* fs) {
 
 }
 
-OBJMesh::~OBJMesh() {
+WingedEdge::OBJMesh::~OBJMesh() {
 }
 
-nanogui::MatrixXf OBJMesh::getVertices() {
+nanogui::MatrixXf WingedEdge::OBJMesh::getVertices() {
     return mVertices;
 }
 
-nanogui::MatrixXu OBJMesh::getFaces() {
+nanogui::MatrixXu WingedEdge::OBJMesh::getFaces() {
     return mFaces;
 }
 
-int OBJMesh::getVertexCount() {
+int WingedEdge::OBJMesh::getVertexCount() {
     return mVertexCount;
 }
 
-int OBJMesh::getFaceCount() {
+int WingedEdge::OBJMesh::getFaceCount() {
     return mFaceCount;
 }
 
-void OBJMesh::setMatrices(nanogui::MatrixXf vertices, nanogui::MatrixXu faces) {
+void WingedEdge::OBJMesh::setMatrices(nanogui::MatrixXf vertices, nanogui::MatrixXu faces) {
     mVertices = vertices;
     mFaces = faces;
     mVertexCount = mVertices.cols();
@@ -103,7 +103,7 @@ void OBJMesh::setMatrices(nanogui::MatrixXf vertices, nanogui::MatrixXu faces) {
  * @param fs
  * @return
  */
-bool OBJMesh::saveFile(std::ofstream *fs) {
+bool WingedEdge::OBJMesh::saveFile(std::ofstream *fs) {
     std::cout << "Saving obj" << std::endl;
     // Save metadeta
     *fs << "# " << mVertexCount << " " << mFaceCount << std::endl;
@@ -124,7 +124,7 @@ bool OBJMesh::saveFile(std::ofstream *fs) {
 /**
  * Set the mesh to become a cube of 2 unit length
  */
-void OBJMesh::setCube() {
+void WingedEdge::OBJMesh::setCube() {
     mVertexCount = 8;
     mVertices = nanogui::MatrixXf(3,8);
 

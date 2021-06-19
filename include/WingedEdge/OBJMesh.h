@@ -3,77 +3,80 @@
 //
 
 #ifndef NANOGUI_TEST_OBJMESH_H
-#define NANOGUI_TEST_OBJMESH_H
-
 #include <fstream>
-#include "Vertex.h"
+#include <WingedEdge/Vertex.h>
 #include <nanogui/common.h>
 
-/**
- * Mesh loaded from an OBJ file. Contains vertices and faces (Vertex indices)
- */
-class OBJMesh {
-public:
-    OBJMesh();
-    ~OBJMesh();
+namespace WingedEdge {
+#define NANOGUI_TEST_OBJMESH_H
 
     /**
-     * Parse an OBJ file and populate matrices Vertices and Faces.
-     * @param fs Input stream from obj file
-     * @return true if success
+     * Mesh loaded from an OBJ file. Contains vertices and faces (Vertex indices)
      */
-    bool parseFile(std::ifstream* fs);
+    class OBJMesh {
+    public:
+        OBJMesh();
 
-    /**
-     * Saves mesh as an obj file.
-     * @param fs
-     * @return
-     */
-    bool saveFile(std::ofstream* fs);
+        ~OBJMesh();
 
-    /**
-     * Set the matrix of vertices and faces of the mesh. Used by WingedEdge to convert back to an OBJ Mesh for saving purpose.
-     * @param vertices Matrix of vertices
-     * @param faces Matrix of faces
-     */
-    void setMatrices(nanogui::MatrixXf vertices, nanogui::MatrixXu faces);
+        /**
+         * Parse an OBJ file and populate matrices Vertices and Faces.
+         * @param fs Input stream from obj file
+         * @return true if success
+         */
+        bool parseFile(std::ifstream *fs);
 
-    /**
-     * Set the mesh to become a cube of 2 unit length
-     */
-    void setCube();
+        /**
+         * Saves mesh as an obj file.
+         * @param fs
+         * @return
+         */
+        bool saveFile(std::ofstream *fs);
 
-    /**
-     * Retrieve matrix of vertices
-     * @return 3xn Matrix
-     */
-    nanogui::MatrixXf getVertices();
+        /**
+         * Set the matrix of vertices and faces of the mesh. Used by WingedEdge to convert back to an OBJ Mesh for saving purpose.
+         * @param vertices Matrix of vertices
+         * @param faces Matrix of faces
+         */
+        void setMatrices(nanogui::MatrixXf vertices, nanogui::MatrixXu faces);
 
-    /**
-     * Retrieve matrix of faces (Vertex indices)
-     * @return 3xt Matrix
-     */
-    nanogui::MatrixXu getFaces();
+        /**
+         * Set the mesh to become a cube of 2 unit length
+         */
+        void setCube();
 
-    /**
-     * Retrieve number of vertices
-     * @return
-     */
-    int getVertexCount();
+        /**
+         * Retrieve matrix of vertices
+         * @return 3xn Matrix
+         */
+        nanogui::MatrixXf getVertices();
 
-    /**
-     * Retrieve number of faces
-     * @return
-     */
-    int getFaceCount();
+        /**
+         * Retrieve matrix of faces (Vertex indices)
+         * @return 3xt Matrix
+         */
+        nanogui::MatrixXu getFaces();
 
-private:
-    int mVertexCount;
-    int mFaceCount;
+        /**
+         * Retrieve number of vertices
+         * @return
+         */
+        int getVertexCount();
 
-    nanogui::MatrixXf mVertices;
-    nanogui::MatrixXu mFaces;
-};
+        /**
+         * Retrieve number of faces
+         * @return
+         */
+        int getFaceCount();
+
+    private:
+        int mVertexCount;
+        int mFaceCount;
+
+        nanogui::MatrixXf mVertices;
+        nanogui::MatrixXu mFaces;
+    };
+}
 
 
 #endif //NANOGUI_TEST_OBJMESH_H

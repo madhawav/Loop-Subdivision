@@ -3,139 +3,142 @@
 //
 
 #ifndef NANOGUI_TEST_WEMESH_H
+#include <WingedEdge/Vertex.h>
+#include <WingedEdge/Face.h>
+#include <nanogui/common.h>
+#include <WingedEdge/OBJMesh.h>
+#include <WingedEdge/Edge.h>
+
+namespace WingedEdge {
 #define NANOGUI_TEST_WEMESH_H
 
-#include "Vertex.h"
-#include "Face.h"
-#include <nanogui/common.h>
-#include "OBJMesh.h"
-
-/**
- *  Class used to hold WingedEdge representation of a Mesh.
- */
-class WEMesh {
-public:
-    WEMesh();
-    ~WEMesh();
-
     /**
-     * Populates WingedEdge faces, edges and vertices with appropriate inter-links using provided vertices and faces (vertex indices)
-     * @param vertices 3xn array of vertices
-     * @param faces 3xt array of vertex indices of each triangular face
-     * @return true if success
+     *  Class used to hold WingedEdge representation of a Mesh.
      */
-    bool loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces);
+    class WEMesh {
+    public:
+        WEMesh();
+        ~WEMesh();
 
-    /**
-     * Populates VertexMatrix, NormalMatrix and FaceMatrix for Smooth Shading Purpose.
-     * @return True if success
-     */
-    bool populateSmoothShadingMatrices();
+        /**
+         * Populates WingedEdge faces, edges and vertices with appropriate inter-links using provided vertices and faces (vertex indices)
+         * @param vertices 3xn array of vertices
+         * @param faces 3xt array of vertex indices of each triangular face
+         * @return true if success
+         */
+        bool loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces);
 
-    /**
-     * Populates VertexMatrix, NormalMatrix and FaceMatrix for Flat Shading Purpose.
-     * @return True if success
-     */
-    bool populateFlatShadingMatrices();
+        /**
+         * Populates VertexMatrix, NormalMatrix and FaceMatrix for Smooth Shading Purpose.
+         * @return True if success
+         */
+        bool populateSmoothShadingMatrices();
 
-    /**
-     * Populates ExpandedVertexMatrix, that holds vertices used to draw wireFrame on top of shaded mesh.
-     * @param epsilon Expansion length
-     */
-    void populateExpandedVertexMatrix(float epsilon);
+        /**
+         * Populates VertexMatrix, NormalMatrix and FaceMatrix for Flat Shading Purpose.
+         * @return True if success
+         */
+        bool populateFlatShadingMatrices();
 
-    /**
-     * Fill vertices and faces matrix of provided objMesh using the information available in WingedEdge structure.
-     * @param objMesh
-     */
-    void fillOBJMesh(OBJMesh* objMesh) const;
+        /**
+         * Populates ExpandedVertexMatrix, that holds vertices used to draw wireFrame on top of shaded mesh.
+         * @param epsilon Expansion length
+         */
+        void populateExpandedVertexMatrix(float epsilon);
 
-    /**
-     * Check whether a model is loaded.
-     * @return True if model is loaded. Otherwise false.
-     */
-    bool isModelLoaded() const;
+        /**
+         * Fill vertices and faces matrix of provided objMesh using the information available in WingedEdge structure.
+         * @param objMesh
+         */
+        void fillOBJMesh(WingedEdge::OBJMesh* objMesh) const;
 
-    /**
-     * Returns minimum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
-     * @return
-     */
-    nanogui::Vector3f getMinPoint() const;
+        /**
+         * Check whether a model is loaded.
+         * @return True if model is loaded. Otherwise false.
+         */
+        bool isModelLoaded() const;
 
-    /**
-     * Returns maximum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
-     * @return
-     */
-    nanogui::Vector3f getMaxPoint() const;
+        /**
+         * Returns minimum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
+         * @return
+         */
+        nanogui::Vector3f getMinPoint() const;
 
-    /**
-     * Returns matrix of normals used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
-     * @return
-     */
-    nanogui::MatrixXf getNormalMatrix() const;
+        /**
+         * Returns maximum coordinate in all 3 axis. Used to set camera parameters when a new model is loaded.
+         * @return
+         */
+        nanogui::Vector3f getMaxPoint() const;
 
-    /**
-     * Returns matrix of vertices used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
-     * @return
-     */
-    nanogui::MatrixXf getVertexMatrix() const;
+        /**
+         * Returns matrix of normals used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
+         * @return
+         */
+        nanogui::MatrixXf getNormalMatrix() const;
 
-    /**
-     * Returns matrix of faces used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
-     * @return
-     */
-    nanogui::MatrixXu getFaceMatrix() const;
+        /**
+         * Returns matrix of vertices used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
+         * @return
+         */
+        nanogui::MatrixXf getVertexMatrix() const;
 
-    /**
-     * Returns matrix of vertices used for rendering wireframes on top of solid mesh. Populated by populateExpandedVertexMatrix.
-     * @return
-     */
-    nanogui::MatrixXf getExpandedVertexMatrix() const;
+        /**
+         * Returns matrix of faces used for rendering purpose. Populated by populateFlatShadingMatrices or populateSmoothShadingMatrices
+         * @return
+         */
+        nanogui::MatrixXu getFaceMatrix() const;
 
-    Vertex* getVertices() const;
-    Edge* getEdges() const;
-    Face* getFaces() const;
+        /**
+         * Returns matrix of vertices used for rendering wireframes on top of solid mesh. Populated by populateExpandedVertexMatrix.
+         * @return
+         */
+        nanogui::MatrixXf getExpandedVertexMatrix() const;
 
-    int getVertexCount() const;
-    int getEdgeCount() const;
-    int getFaceCount() const;
+        Vertex* getVertices() const;
+        Edge* getEdges() const;
+        Face* getFaces() const;
 
-    void allocateVertices(int v);
-    void allocateEdges(int e);
-    void allocateFaces(int f);
+        int getVertexCount() const;
+        int getEdgeCount() const;
+        int getFaceCount() const;
 
-private:
-    // WingedEdge elements live in following arrays
-    Vertex* mVertices;
-    Edge* mEdges;
-    Face* mFaces;
+        void allocateVertices(int v);
+        void allocateEdges(int e);
+        void allocateFaces(int f);
 
-    int mVertexCount;
-    int mFaceCount;
-    int mEdgeCount;
+    private:
+        // WingedEdge elements live in following arrays
+        Vertex* mVertices;
+        Edge* mEdges;
+        Face* mFaces;
 
-    nanogui::Vector3f mMinPoint;
-    nanogui::Vector3f mMaxPoint;
+        int mVertexCount;
+        int mFaceCount;
+        int mEdgeCount;
 
-    // Populated by populateFlatShadingMatrix, populateSmoothShadingMatrix methods
-    nanogui::MatrixXf mNormalMatrix;
-    nanogui::MatrixXf mVertexMatrix;
-    nanogui::MatrixXu mFaceMatrix;
+        nanogui::Vector3f mMinPoint;
+        nanogui::Vector3f mMaxPoint;
 
-    // Populated by populateExpandedVertexMatrix method
-    nanogui::MatrixXf mExpandedVertexMatrix;
+        // Populated by populateFlatShadingMatrix, populateSmoothShadingMatrix methods
+        nanogui::MatrixXf mNormalMatrix;
+        nanogui::MatrixXf mVertexMatrix;
+        nanogui::MatrixXu mFaceMatrix;
 
-    // Used to avoid re-calculations
-    bool mSmoothedShaded;
-    bool mFlatShaded;
+        // Populated by populateExpandedVertexMatrix method
+        nanogui::MatrixXf mExpandedVertexMatrix;
 
-    bool mModelLoaded;
+        // Used to avoid re-calculations
+        bool mSmoothedShaded;
+        bool mFlatShaded;
 
-    /**
-     * Unload mesh.
-     */
-    void unloadModel();
-};
+        bool mModelLoaded;
+
+        /**
+         * Unload mesh.
+         */
+        void unloadModel();
+    };
+}
 
 
 #endif //NANOGUI_TEST_WEMESH_H

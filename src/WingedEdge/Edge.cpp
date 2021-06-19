@@ -5,7 +5,7 @@
 #include <WingedEdge/Edge.h>
 
 
-Edge::Edge() {
+WingedEdge::Edge::Edge() {
     mVertDest = nullptr;
     mVertOrigin = nullptr;
     mEdgeLeftCCW = nullptr;
@@ -16,7 +16,7 @@ Edge::Edge() {
     mRightFace = nullptr;
 }
 
-Edge::Edge(Vertex *origin, Vertex *destination) : Edge(){
+WingedEdge::Edge::Edge(Vertex *origin, Vertex *destination) : Edge(){
     mVertOrigin = origin;
     mVertDest = destination;
 }

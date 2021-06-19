@@ -3,57 +3,58 @@
 //
 
 #include <WingedEdge/Vertex.h>
+#include <WingedEdge/Edge.h>
 
-void Vertex::setEdge(Edge *nEdge) {
+void WingedEdge::Vertex::setEdge(WingedEdge::Edge *nEdge) {
     mEdge = nEdge;
 }
 
-Edge *Vertex::getEdge() {
+WingedEdge::Edge *WingedEdge::Vertex::getEdge() {
     return mEdge;
 }
 
-Vertex::Vertex() {
+WingedEdge::Vertex::Vertex() {
     mEdge = nullptr;
     mPosition = nanogui::Vector3f(0,0,0);
 }
 
-float Vertex::getX() {
+float WingedEdge::Vertex::getX() {
     return mPosition.x();
 }
 
-float Vertex::getY() {
+float WingedEdge::Vertex::getY() {
     return mPosition.y();
 }
 
-float Vertex::getZ() {
+float WingedEdge::Vertex::getZ() {
     return mPosition.z();
 }
 
-void Vertex::setPosition(float x, float y, float z) {
+void WingedEdge::Vertex::setPosition(float x, float y, float z) {
     mPosition = nanogui::Vector3f(x,y,z);
 }
 
-void Vertex::setX(float x) {
+void WingedEdge::Vertex::setX(float x) {
     mPosition[0] = x;
 }
 
-void Vertex::setY(float y) {
+void WingedEdge::Vertex::setY(float y) {
     mPosition[1] = y;
 }
 
-void Vertex::setZ(float z) {
+void WingedEdge::Vertex::setZ(float z) {
     mPosition[2] = z;
 }
 
-Vertex::Vertex(float x, float y, float z) : Vertex() {
+WingedEdge::Vertex::Vertex(float x, float y, float z) : WingedEdge::Vertex() {
     setPosition(x,y,z);
 }
 
-nanogui::Vector3f Vertex::getPosition() {
+nanogui::Vector3f WingedEdge::Vertex::getPosition() {
     return mPosition;
 }
 
-void Vertex::setPosition(nanogui::Vector3f pos) {
+void WingedEdge::Vertex::setPosition(nanogui::Vector3f pos) {
     this->mPosition = pos;
 }
 

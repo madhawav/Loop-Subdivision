@@ -1,11 +1,12 @@
+//
+// Created by madhawa on 2020-02-09.
+//
+
 #include <iostream>
 #include <WingedEdge/WEMesh.h>
 #include <WingedEdge/Edge.h>
 #include <WingedEdge/OBJMesh.h>
 
-//
-// Created by madhawa on 2020-02-09.
-//
 
 /**
  * Each edge of source edge is represented by two edges in the resultant mesh of loop subdivision.
@@ -14,9 +15,9 @@
  */
 class ExtendedEdge{
 public:
-    Edge* originalEdge;
-    Edge* newEdgeS;
-    Edge* newEdgeE;
+    WingedEdge::Edge* originalEdge;
+    WingedEdge::Edge* newEdgeS;
+    WingedEdge::Edge* newEdgeE;
     bool added;
     ExtendedEdge(){
         originalEdge = nullptr;
@@ -32,19 +33,19 @@ public:
  */
 class ExtendedFace{
 public:
-    Face* originalFace;
+    WingedEdge::Face* originalFace;
     ExtendedEdge* extendedEdge1;
     ExtendedEdge* extendedEdge2;
     ExtendedEdge* extendedEdge3;
 
-    Edge* internalEdge12; //from midpoint of external edge 1 to midpoint of externaledge2
-    Edge* internalEdge23;
-    Edge* internalEdge31;
+    WingedEdge::Edge* internalEdge12; //from midpoint of external edge 1 to midpoint of externaledge2
+    WingedEdge::Edge* internalEdge23;
+    WingedEdge::Edge* internalEdge31;
 
-    Face* face_e1mid_e2mid_cp;
-    Face* face_e2mid_e3mid_cp;
-    Face* face_e3mid_e1mid_cp;
-    Face* face_e1mid_e2mid_e3mid;
+    WingedEdge::Face* face_e1mid_e2mid_cp;
+    WingedEdge::Face* face_e2mid_e3mid_cp;
+    WingedEdge::Face* face_e3mid_e1mid_cp;
+    WingedEdge::Face* face_e1mid_e2mid_e3mid;
 
     bool faceAdded;
 
@@ -63,7 +64,7 @@ public:
  * @param e2
  * @return
  */
-Vertex* getCommonVertex(Edge* e1, Edge* e2)
+WingedEdge::Vertex* getCommonVertex(WingedEdge::Edge* e1, WingedEdge::Edge* e2)
 {
     if(e1->mVertOrigin == e2->mVertOrigin)
         return e1->mVertOrigin;
@@ -83,9 +84,9 @@ Vertex* getCommonVertex(Edge* e1, Edge* e2)
  * @param applyEdgeRule if true, edge vertex position is calculated using Edge Geometric Rule of Loop Subdivision. If false, midpoint of edge is chosen.
  * @param applyVertexRule if true, Vertex Geometric rule is applied. Otherwise, vertices are simply copied forward.
  */
-void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool applyEdgeRule){
-    WEMesh _targetMesh;
-    WEMesh* targetMesh = &_targetMesh;
+void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool applyVertexRule, bool applyEdgeRule){
+    WingedEdge::WEMesh _targetMesh;
+    WingedEdge::WEMesh* targetMesh = &_targetMesh;
 
     // Each edge gets partioned by a vertex
     int newVertexCount = sourceMesh->getVertexCount() + sourceMesh->getEdgeCount();
@@ -112,10 +113,10 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
             float neighbourY = 0;
             float neighbourZ = 0;
 
-            Vertex* currentVertex = &(sourceMesh->getVertices()[i]);
-            Edge* startEdge = currentVertex->getEdge();
+            WingedEdge::Vertex* currentVertex = &(sourceMesh->getVertices()[i]);
+            WingedEdge::Edge* startEdge = currentVertex->getEdge();
             // Walk around clockwise and count edges and sum up neighbours coordinates
-            Edge* currentEdge = nullptr;
+            WingedEdge::Edge* currentEdge = nullptr;
             int adjacentEdgeCount = 0;
             if(startEdge->mVertOrigin == currentVertex){
                 if(startEdge->mEdgeRightCW->mVertOrigin == currentVertex || startEdge->mEdgeRightCW->mVertDest == currentVertex){
@@ -277,9 +278,9 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
 
     for(int f = 0; f < sourceMesh->getFaceCount(); f++){
         // identify 3 edges of the face in CW order
-        Edge* e1 = sourceMesh->getFaces()[f].getEdge();
-        Edge* e2 = nullptr;
-        Edge* e3 = nullptr;
+        WingedEdge::Edge* e1 = sourceMesh->getFaces()[f].getEdge();
+        WingedEdge::Edge* e2 = nullptr;
+        WingedEdge::Edge* e3 = nullptr;
         if(&(sourceMesh->getFaces()[f]) == e1->mRightFace){
             e2 = e1->mEdgeRightCW;
             e3 = e1->mEdgeRightCCW;
@@ -292,7 +293,7 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
         }
         // Create edge vertices
         // Identify three edges in CW orientation
-        Edge* edgesCW[] = {e1, e2, e3};
+        WingedEdge::Edge* edgesCW[] = {e1, e2, e3};
         for(int e = 0; e < 3; e++)
         {
 //            std::cout << e << std::endl;
@@ -386,9 +387,9 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
     //Now all the vertices are in place. Now lets subdivide faces, adding the internal edges.
     for(int f = 0; f < sourceMesh->getFaceCount(); f++) {
         // identify 3 edges of the face in CW order
-        Edge *e1 = sourceMesh->getFaces()[f].getEdge();
-        Edge *e2 = nullptr;
-        Edge *e3 = nullptr;
+        WingedEdge::Edge *e1 = sourceMesh->getFaces()[f].getEdge();
+        WingedEdge::Edge *e2 = nullptr;
+        WingedEdge::Edge *e3 = nullptr;
         if (&(sourceMesh->getFaces()[f]) == e1->mRightFace) {
             e2 = e1->mEdgeRightCW;
             e3 = e1->mEdgeRightCCW;
@@ -398,7 +399,7 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
         } else {
             assert(false);
         }
-        Edge *edgesCW[] = {e1, e2, e3};
+        WingedEdge::Edge *edgesCW[] = {e1, e2, e3};
         ExtendedFace *currentExtendedFace = &(extendedFaces[f]);
         currentExtendedFace->extendedEdge1 = &(extendedEdges[e1 - sourceMesh->getEdges()]);
         currentExtendedFace->extendedEdge2 = &(extendedEdges[e2 - sourceMesh->getEdges()]);
@@ -433,10 +434,10 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
         ExtendedFace *currentExtendedFace = &(extendedFaces[f]);
         ExtendedEdge* party1[3] = {currentExtendedFace->extendedEdge1, currentExtendedFace->extendedEdge2, currentExtendedFace->extendedEdge3};
         ExtendedEdge* party2[3] = {currentExtendedFace->extendedEdge2, currentExtendedFace->extendedEdge3, currentExtendedFace->extendedEdge1};
-        Edge* diagonalParty[3] = {currentExtendedFace->internalEdge12, currentExtendedFace->internalEdge23, currentExtendedFace->internalEdge31};
+        WingedEdge::Edge* diagonalParty[3] = {currentExtendedFace->internalEdge12, currentExtendedFace->internalEdge23, currentExtendedFace->internalEdge31};
 //        Vertex* commonPoint = nullptr;
-        Edge* party1Part[3];
-        Edge* party2Part[3];
+        WingedEdge::Edge* party1Part[3];
+        WingedEdge::Edge* party2Part[3];
 
         for(int k = 0; k < 3; k++)
         {
@@ -460,15 +461,15 @@ void loopSubd(OBJMesh* tMesh, WEMesh* sourceMesh, bool applyVertexRule, bool app
 
         // Edges in CW order: party1: party2: diagonalParty
         for(int k = 0; k < 3;k++){
-            Vertex* c1 = getCommonVertex(party1Part[k], party2Part[k]);
-            Vertex* c2 = getCommonVertex(party2Part[k], diagonalParty[k]);
-            Vertex* c3 = getCommonVertex(diagonalParty[k], party1Part[k]);
+            WingedEdge::Vertex* c1 = getCommonVertex(party1Part[k], party2Part[k]);
+            WingedEdge::Vertex* c2 = getCommonVertex(party2Part[k], diagonalParty[k]);
+            WingedEdge::Vertex* c3 = getCommonVertex(diagonalParty[k], party1Part[k]);
             std::cout << "Face: " << c1 - targetMesh->getVertices() << ", " << c2 - targetMesh->getVertices() << ", " << c3-targetMesh->getVertices() << std::endl;
             faceIndices.col(addedFaceCount++) << c3- targetMesh->getVertices(), c2- targetMesh->getVertices(), c1- targetMesh->getVertices();
         }
-        Vertex* d1 = getCommonVertex(diagonalParty[0], diagonalParty[1]);
-        Vertex* d2 = getCommonVertex(diagonalParty[1], diagonalParty[2]);
-        Vertex* d3 = getCommonVertex(diagonalParty[2], diagonalParty[0]);
+        WingedEdge::Vertex* d1 = getCommonVertex(diagonalParty[0], diagonalParty[1]);
+        WingedEdge::Vertex* d2 = getCommonVertex(diagonalParty[1], diagonalParty[2]);
+        WingedEdge::Vertex* d3 = getCommonVertex(diagonalParty[2], diagonalParty[0]);
 
         faceIndices.col(addedFaceCount++) << d3- targetMesh->getVertices(), d2- targetMesh->getVertices(), d1- targetMesh->getVertices();
     }

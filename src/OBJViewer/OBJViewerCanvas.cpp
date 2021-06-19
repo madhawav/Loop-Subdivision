@@ -2,8 +2,8 @@
 // Created by madhawa on 2021-06-18.
 //
 
-#include "OBJViewerConstants.h"
-#include "OBJViewerCanvas.h"
+#include "OBJViewer/OBJViewerConstants.h"
+#include "OBJViewer/OBJViewerCanvas.h"
 #include "WingedEdge/OBJMesh.h"
 #include "Subdivision/subd.h"
 
@@ -33,7 +33,7 @@ OBJViewer::OBJViewerCanvas::OBJViewerCanvas(nanogui::Widget *parent) : nanogui::
     mShader.initFromFiles(SHADER_NAME, VERTEX_SHADER_FILE_NAME, FRAGMENT_SHADER_FILE_NAME);
 
     // Setup a cube
-    OBJMesh objMesh;
+    WingedEdge::OBJMesh objMesh;
     objMesh.setCube();
     loadObjMesh(&objMesh);
 }
@@ -42,7 +42,7 @@ bool OBJViewer::OBJViewerCanvas::saveObj(const string &path) const {
     if (!weMesh.isModelLoaded())
         return false;
 
-    OBJMesh objMesh;
+    WingedEdge::OBJMesh objMesh;
     weMesh.fillOBJMesh(&objMesh);
     std::ofstream outFile;
     outFile.open(path);
@@ -54,7 +54,7 @@ bool OBJViewer::OBJViewerCanvas::saveObj(const string &path) const {
 }
 
 bool OBJViewer::OBJViewerCanvas::loadObj(const string &path) {
-    OBJMesh objMesh;
+    WingedEdge::OBJMesh objMesh;
     std::ifstream inFile;
     inFile.open(path);
     if (!inFile) {
@@ -73,7 +73,7 @@ void OBJViewer::OBJViewerCanvas::performLoopSubdivision() {
     if (!isSubdivided) {
         weMesh.fillOBJMesh(&originalMesh);
     }
-    OBJMesh subResult;
+    WingedEdge::OBJMesh subResult;
     loopSubd(&subResult, &weMesh, true, true);
     loadObjMesh(&subResult);
     isSubdivided = true;
@@ -83,7 +83,7 @@ void OBJViewer::OBJViewerCanvas::performLoopTessellation() {
     if (!isSubdivided) {
         weMesh.fillOBJMesh(&originalMesh);
     }
-    OBJMesh subResult;
+    WingedEdge::OBJMesh subResult;
     loopSubd(&subResult, &weMesh, false, false);
     loadObjMesh(&subResult);
     isSubdivided = true;
@@ -97,7 +97,7 @@ void OBJViewer::OBJViewerCanvas::resetToOriginalMesh() {
     isSubdivided = false;
 }
 
-bool OBJViewer::OBJViewerCanvas::loadObjMesh(OBJMesh *objMesh) {
+bool OBJViewer::OBJViewerCanvas::loadObjMesh(WingedEdge::OBJMesh *objMesh) {
     // Convert to WingedEdge
     if (!weMesh.loadModel(objMesh->getVertices(), objMesh->getFaces()))
         return false;

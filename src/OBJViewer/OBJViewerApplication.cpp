@@ -2,14 +2,31 @@
 // Created by madhawa on 2021-06-18.
 //
 
-#include "OBJViewerApplication.h"
+#include <nanogui/common.h>
+#include <nanogui/screen.h>
+#include <nanogui/glutil.h>
+#include <nanogui/glcanvas.h>
+#include <nanogui/widget.h>
+#include <nanogui/button.h>
+#include <nanogui/window.h>
+#include <nanogui/combobox.h>
+#include <nanogui/label.h>
+#include <nanogui/layout.h>
+#include <nanogui/messagedialog.h>
+#include <nanogui/slider.h>
 
-OBJViewerApplication::OBJViewerApplication() : nanogui::Screen(Eigen::Vector2i(WINDOW_WIDTH, WINDOW_HEIGHT),
-                                                               TXT_APP_TITLE,
-                                                               false),
-                                               randomDevice(), randomEngine(randomDevice()),
-                                               subdivisionAmount(1), lblSubdivisionCount(nullptr) {
-    using namespace nanogui;
+#include "OBJViewer/OBJViewerApplication.h"
+#include "OBJViewer/OBJViewerCanvas.h"
+#include "OBJViewer/OBJViewerConstants.h"
+#include "WingedEdge/OBJMesh.h"
+
+using namespace nanogui;
+
+OBJViewer::OBJViewerApplication::OBJViewerApplication() : nanogui::Screen(nanogui::Vector2i(WINDOW_WIDTH, WINDOW_HEIGHT),
+                                                                          TXT_APP_TITLE,
+                                                                          false),
+                                                          randomDevice(), randomEngine(randomDevice()),
+                                                          subdivisionAmount(1), lblSubdivisionCount(nullptr) {
 
     // Initialize UI layout.
     createOBJViewerWindow();
@@ -20,7 +37,7 @@ OBJViewerApplication::OBJViewerApplication() : nanogui::Screen(Eigen::Vector2i(W
     performLayout();
 }
 
-bool OBJViewerApplication::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+bool OBJViewer::OBJViewerApplication::mouseMotionEvent(const nanogui::Vector2i &p, const nanogui::Vector2i &rel, int button, int modifiers) {
     if (button == GLFW_MOUSE_BUTTON_2) {
         //Left click mouse drag event. Orbit camera.
         mCanvas->setRotation(
@@ -48,7 +65,7 @@ bool OBJViewerApplication::mouseMotionEvent(const Vector2i &p, const Vector2i &r
     return false;
 }
 
-bool OBJViewerApplication::scrollEvent(const Vector2i &p, const Vector2f &rel) {
+bool OBJViewer::OBJViewerApplication::scrollEvent(const nanogui::Vector2i &p, const nanogui::Vector2f &rel) {
     // Zooming
     mCanvas->setZoom(mCanvas->getZoom() + rel.y() / 10.0f);
     if (mCanvas->getZoom() < 0.1) {
@@ -57,17 +74,17 @@ bool OBJViewerApplication::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     return true;
 }
 
-void OBJViewerApplication::drawContents() {
+void OBJViewer::OBJViewerApplication::drawContents() {
     // Update canvas MVP
     mCanvas->updateMVP();
 }
 
-void OBJViewerApplication::draw(NVGcontext *ctx) {
+void OBJViewer::OBJViewerApplication::draw(NVGcontext *ctx) {
     /* Draw the user interface */
     Screen::draw(ctx);
 }
 
-void OBJViewerApplication::createControlsWindow() {
+void OBJViewer::OBJViewerApplication::createControlsWindow() {
     using namespace nanogui;
 
     auto *controlsWindow = new Window(this, TXT_WINDOW_CONTROLS_TITLE);
@@ -77,7 +94,7 @@ void OBJViewerApplication::createControlsWindow() {
     // Button to load default cube
     auto *btnNewCube = new Button(controlsWindow, TXT_BTN_NEW_CUBE);
     btnNewCube->setCallback([&] {
-        OBJMesh objMesh;
+        WingedEdge::OBJMesh objMesh;
         objMesh.setCube();
         mCanvas->loadObjMesh(&objMesh);
     });
@@ -141,7 +158,7 @@ void OBJViewerApplication::createControlsWindow() {
     });
 }
 
-void OBJViewerApplication::createSubdivisionWindow() {
+void OBJViewer::OBJViewerApplication::createSubdivisionWindow() {
     using namespace nanogui;
     auto *subdivisionWindow = new Window(this, TXT_WINDOW_SUBDIV_TITLE);
     subdivisionWindow->setPosition(Vector2i(SUBDIV_WINDOW_X, SUBDIV_WINDOW_Y));
@@ -184,7 +201,7 @@ void OBJViewerApplication::createSubdivisionWindow() {
 
 }
 
-void OBJViewerApplication::createOBJViewerWindow() {
+void OBJViewer::OBJViewerApplication::createOBJViewerWindow() {
     using namespace nanogui;
     // Create window
     Window *window = new Window(this, TXT_WINDOW_OBJ_VIEWER_TITLE);

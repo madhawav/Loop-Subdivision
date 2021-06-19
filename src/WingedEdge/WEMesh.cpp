@@ -11,6 +11,8 @@
 #include <WingedEdge/WEMesh.h>
 #include <WingedEdge/OBJMesh.h>
 
+using namespace WingedEdge;
+
 WEMesh::WEMesh() {
     mVertices = nullptr;
     mFaces = nullptr;
@@ -76,13 +78,13 @@ bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
     mEdgeCount = mFaceCount*3/2;
 
     mVertices = new Vertex[mVertexCount];
-    mEdges = new Edge[mFaceCount*3/2];
+    mEdges = new Edge[mFaceCount * 3 / 2];
     mFaces = new Face[mFaceCount];
 
     // Used to locate an edge using a vertex pair. Think of this as a hash map
-    Edge*** vertexPairEdgeArray = new Edge**[mVertexCount];
+    WingedEdge::Edge*** vertexPairEdgeArray = new WingedEdge::Edge**[mVertexCount];
     for(int i = 0; i < mVertexCount; i++){
-        vertexPairEdgeArray[i] = new Edge*[mVertexCount];
+        vertexPairEdgeArray[i] = new WingedEdge::Edge*[mVertexCount];
         for (int j = 0; j < mVertexCount; j++){
             vertexPairEdgeArray[i][j] = nullptr;
         }
@@ -108,7 +110,7 @@ bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
     // Loop through faces and populate edges. Fill LeftFace and RightFace.
     for (int f = 0; f < mFaceCount; f++)
     {
-        Edge* edgeBank[] = {nullptr, nullptr, nullptr}; //keep track of 3 edges belonging to this face
+        WingedEdge::Edge* edgeBank[] = {nullptr, nullptr, nullptr}; //keep track of 3 edges belonging to this face
         for(int k = 0; k < 3; k++)
         {
             int v1_index = faces(k,f);
@@ -252,9 +254,9 @@ bool WEMesh::populateSmoothShadingMatrices() {
     for(int f = 0; f < mFaceCount; f++)
     {
         // Identify v1, v2 and v3 in order
-        Vertex* v1 ;
-        Vertex* v2 ;
-        Vertex* v3 ;
+        WingedEdge::Vertex* v1 ;
+        WingedEdge::Vertex* v2 ;
+        WingedEdge::Vertex* v3 ;
         if( mFaces[f].getEdge()->mRightFace == &(mFaces[f])){
             // I am the right face
             v2 = mFaces[f].getEdge()->mVertOrigin;
@@ -333,9 +335,9 @@ bool WEMesh::populateFlatShadingMatrices() {
     for(int f = 0; f < mFaceCount; f++)
     {
         // Identify v1, v2 and v3 in order
-        Vertex* v1 ;
-        Vertex* v2 ;
-        Vertex* v3;
+        WingedEdge::Vertex* v1 ;
+        WingedEdge::Vertex* v2 ;
+        WingedEdge::Vertex* v3;
         if( mFaces[f].getEdge()->mRightFace == &(mFaces[f])){
             // I am the right face
             v2 = mFaces[f].getEdge()->mVertOrigin;
@@ -410,9 +412,9 @@ void WEMesh::fillOBJMesh(OBJMesh * objMesh) const {
     for(int f = 0; f < mFaceCount; f++)
     {
         // Identify vertices in order
-        Vertex* v1 ;
-        Vertex* v2 ;
-        Vertex* v3;
+        WingedEdge::Vertex* v1 ;
+        WingedEdge::Vertex* v2 ;
+        WingedEdge::Vertex* v3;
         if( mFaces[f].getEdge()->mRightFace == &(mFaces[f])){
             v2 = mFaces[f].getEdge()->mVertOrigin;
             v1 = mFaces[f].getEdge()->mVertDest;
@@ -463,15 +465,15 @@ void WEMesh::populateExpandedVertexMatrix(float epsilon) {
     }
 }
 
-Vertex *WEMesh::getVertices() const {
+WingedEdge::Vertex *WEMesh::getVertices() const {
     return mVertices;
 }
 
-Edge *WEMesh::getEdges() const {
+WingedEdge::Edge *WEMesh::getEdges() const {
     return mEdges;
 }
 
-Face *WEMesh::getFaces() const {
+WingedEdge::Face *WEMesh::getFaces() const {
     return mFaces;
 }
 
@@ -490,17 +492,17 @@ int WEMesh::getFaceCount() const {
 void WEMesh::allocateVertices(int v){
     delete[] mVertices;
     mVertexCount = v;
-    mVertices = new Vertex[mVertexCount];
+    mVertices = new WingedEdge::Vertex[mVertexCount];
 }
 void WEMesh::allocateEdges(int e){
     delete[] mEdges;
     mEdgeCount = e;
-    mEdges = new Edge[mEdgeCount];
+    mEdges = new WingedEdge::Edge[mEdgeCount];
 }
 void WEMesh::allocateFaces(int f){
     delete[] mFaces;
     mFaceCount = f;
-    mFaces = new Face[mFaceCount];
+    mFaces = new WingedEdge::Face[mFaceCount];
 }
 
 bool WEMesh::isModelLoaded() const {
