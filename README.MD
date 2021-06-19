@@ -1,30 +1,36 @@
 # OBJ View with Subdivision
-The project was done for the Computer Graphics course. Loop sub-division is implemented using the Winged Edge data structure.
+The project is for the Computational Geometry/Computer Graphics graduate course. 
+This is a 3D mesh viewer with support for parsing and serializing OBJ meshes. 
+Implements loop subdivision using the Winged Edge data structure. 
+Implements proper vertex normal / face normal calculation to support smooth/flat shading modes.
+
 ![preview](doc/preview.png)
 
-## How to compile and run the code? (Linux)
-1) Run `git submodule update --init --recursive`.
-2) Compile and run the code as follows.
-	```bash
-	mkdir build
-	cd build
-	cmake ../
-	make
-	./subd
-	```
+**The preferred compiler is GNU C++ on Linux/WSL. The Visual C++ compiler is supported as well.**
 
-## How to compile and run the code? (Windows)
-1) Run `git submodule update --init --recursive`.
-2) Compile and run the code as follows.
-    ```cmd
-    mkdir build
-    cd build
-    # In the next command, specify the version string according to your visual studio version. Win64 is necessary for nanogui.
-    cmake -G "Visual Studio 15 2017 Win64" .. 
-    cmake --build . --config Debug
-    Debug\subd.exe
-    ```
-	Note: If you encouter render issues, copy the StandardShading.fragmentshader file and the StandardShading.vertexshader file to the target directory.
+## How to compile and run the code?
+- For Linux users
+    1) Run `git submodule update --init --recursive`.
+    2) Compile and run the code as follows.
+        ```bash
+        mkdir build
+        cd build
+        cmake ../
+        make
+        ./subd
+        ```
+- For Windows users       
+    1) Run `git submodule update --init --recursive`.
+    2) Compile and run the code as follows.
+        ```cmd
+        mkdir build
+        cd build
+        # In the next command, specify the version string according to your visual studio version. Win64 is necessary for nanogui.
+        cmake -G "Visual Studio 15 2017 Win64" .. 
+        cmake --build . --config Debug
+        Debug\subd.exe
+        ```
+        Note: If you encouter render issues, copy the StandardShading.fragmentshader file and the StandardShading.vertexshader file to the target directory.
 
 	
 ## Notes on Implementation of Subdivision

@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(obj_view)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+include_directories(include)
 
-# Disable building extras
+# Nano GUI
 set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
 set(NANOGUI_BUILD_PYTHON  OFF CACHE BOOL " " FORCE)
 set(NANOGUI_INSTALL       OFF CACHE BOOL " " FORCE)
@@ -13,13 +14,14 @@ set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
 
 add_subdirectory(lib/nanogui)
 include_directories(lib/nanogui/include)
-include_directories(include)
 include_directories(${NANOGUI_EXTRA_INCS})
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
+# Shading resources
 configure_file(glsl/StandardShading.fragmentshader StandardShading.fragmentshader COPYONLY)
 configure_file(glsl/StandardShading.vertexshader StandardShading.vertexshader COPYONLY)
 
+# Embed Resource is used to read shading resources
 add_subdirectory(lib/embed-resource)
 include_directories(lib/embed-resource)
 
