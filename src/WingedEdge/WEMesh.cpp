@@ -29,6 +29,37 @@ WEMesh::WEMesh() {
     mModelLoaded = false;
 }
 
+void WEMesh::unloadModel() {
+    if(!mModelLoaded)
+        return;
+
+    // Reset state variables
+    mMinPoint = nanogui::Vector3f(0,0,0);
+    mMaxPoint = nanogui::Vector3f(0,0,0);
+    mVertexMatrix = nanogui::MatrixXf(3,0);
+    mFaceMatrix = nanogui::MatrixXu(3,0);
+    mNormalMatrix = nanogui::MatrixXf(3, 0);
+    mExpandedVertexMatrix = nanogui::MatrixXf(3,0);
+
+    mVertexCount = 0;
+    mFaceCount = 0;
+    mEdgeCount = 0;
+
+    mSmoothedShaded = false;
+    mFlatShaded = false;
+
+    delete[] mVertices;
+    delete[] mEdges;
+    delete[] mFaces;
+
+    mVertices = nullptr;
+    mEdges = nullptr;
+    mFaces = nullptr;
+
+    mModelLoaded = false;
+
+}
+
 /**
  * Populates WingedEdge faces, edges and vertices with appropriate inter-links using provided vertices and faces (vertex indices)
  * @param vertices 3xn array of vertices
@@ -38,21 +69,7 @@ WEMesh::WEMesh() {
 bool WEMesh::loadModel(nanogui::MatrixXf vertices, nanogui::MatrixXu faces){
     std::cout << std::endl << "Populating Winged Edge" <<std::endl;
 
-    // Reset state variables since a new mesh is loaded
-    mMinPoint = nanogui::Vector3f(0,0,0);
-    mMaxPoint = nanogui::Vector3f(0,0,0);
-    mVertexMatrix = nanogui::MatrixXf(3,0);
-    mFaceMatrix = nanogui::MatrixXu(3,0);
-    mNormalMatrix = nanogui::MatrixXf(3, 0);
-    mExpandedVertexMatrix = nanogui::MatrixXf(3,0);
-
-    mSmoothedShaded = false;
-    mFlatShaded = false;
-
-    delete[] mVertices;
-    delete[] mEdges;
-    delete[] mFaces;
-    mModelLoaded = false;
+    unloadModel();
 
     mVertexCount = vertices.cols();
     mFaceCount = faces.cols();
@@ -371,9 +388,7 @@ bool WEMesh::populateFlatShadingMatrices() {
 }
 
 WEMesh::~WEMesh() {
-    delete[] mVertices;
-    delete[] mEdges;
-    delete[] mFaces;
+    unloadModel();
 }
 
 /**

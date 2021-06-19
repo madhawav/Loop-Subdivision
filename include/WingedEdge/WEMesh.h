@@ -130,6 +130,11 @@ private:
     bool mFlatShaded;
 
     bool mModelLoaded;
+
+    /**
+     * Unload mesh.
+     */
+    void unloadModel();
 };
 
 

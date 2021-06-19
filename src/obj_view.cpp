@@ -5,6 +5,9 @@
 #include <WingedEdge/Vertex.h>
 #include <WingedEdge/OBJMesh.h>
 
+#include "OBJViewerCanvas.h"
+#include "OBJViewerConstants.h"
+
 #include <nanogui/opengl.h>
 #include <nanogui/glutil.h>
 #include <nanogui/screen.h>
@@ -17,6 +20,7 @@
 #include <nanogui/slider.h>
 #include <iostream>
 #include <string>
+#include <random>
 
 // Includes for the GLTexture class.
 #include <cstdint>
@@ -34,7 +38,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <OBJViewerCanvas.h>
+
 
 #if defined(_WIN32)
 #  pragma warning(pop)
@@ -66,219 +70,258 @@ using nanogui::MatrixXf;
 using nanogui::Label;
 using nanogui::Arcball;
 
+
 /**
  * The WingedEdge OBJ Viewer
  */
 class OBJViewApplication : public nanogui::Screen {
 public:
-    OBJViewApplication() : nanogui::Screen(Eigen::Vector2i(900, 600), "Winged Edge Obj Viewer with Subdivision", false) {
+    /**
+     * Initialize Application
+     */
+    OBJViewApplication() : nanogui::Screen(Eigen::Vector2i(WINDOW_WIDTH, WINDOW_HEIGHT), TXT_APP_TITLE,
+                                           false), randomDevice(), randomEngine(randomDevice()) {
+        using namespace nanogui;
+        createOBJViewerWindow();
+        createControlsWindow();
+        createSubdivisionWindow();
+
+        // Assemble layout.
+        performLayout();
+    }
+
+    /**
+     * Callback to handle mouse movement events.
+     */
+    virtual bool mouseMotionEvent(const Eigen::Vector2i &p, const Vector2i &rel, int button, int modifiers) override {
+        if (button == GLFW_MOUSE_BUTTON_2) {
+            //Left click mouse drag event. Orbit camera.
+            mCanvas->setRotation(
+                    nanogui::Vector3f(mCanvas->getRotation().x() + rel.y() * MOUSE_MOVEMENT_MULTIPLIER,
+                                      mCanvas->getRotation().y(),
+                                      mCanvas->getRotation().z() - rel.x() * MOUSE_MOVEMENT_MULTIPLIER));
+            return true;
+        } else if (button == GLFW_MOUSE_BUTTON_3) {
+            // Right click mouse drag event.
+            // Pan camera relative to current orientation.
+            Eigen::Matrix4f camRotation;
+            camRotation.setIdentity();
+            camRotation.topLeftCorner<3, 3>() = Eigen::Matrix3f(
+                    Eigen::AngleAxisf(mCanvas->getRotation()[1], Eigen::Vector3f::UnitY()) *
+                    Eigen::AngleAxisf(mCanvas->getRotation()[2], Eigen::Vector3f::UnitZ()) *
+                    Eigen::AngleAxisf(mCanvas->getRotation()[0], Eigen::Vector3f::UnitX()));
+
+            Eigen::Vector4f camOffset = camRotation * Eigen::Vector4f(rel.x() * MOUSE_MOVEMENT_MULTIPLIER, 0,
+                                                                      rel.y() * MOUSE_MOVEMENT_MULTIPLIER, 1);
+            mCanvas->setTarget(nanogui::Vector3f(mCanvas->getTarget().x() + camOffset.x(),
+                                                 mCanvas->getTarget().y() + camOffset.y(),
+                                                 mCanvas->getTarget().z() + camOffset.z()));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Mousewheel scroll event
+     */
+    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override {
+        // Zooming
+        mCanvas->setZoom(mCanvas->getZoom() + rel.y() / 10.0f);
+        if (mCanvas->getZoom() < 0.1) {
+            mCanvas->setZoom(0.1);
+        }
+        return true;
+    }
+
+    /**
+     * Callback to update layout.
+     */
+    virtual void drawContents() override {
+        // Update canvas MVP
+        mCanvas->updateMVP();
+    }
+
+    /**
+     * Render callback
+     */
+    virtual void draw(NVGcontext *ctx) {
+        /* Draw the user interface */
+        Screen::draw(ctx);
+    }
+
+    /**
+     * Destructor
+     */
+    virtual ~OBJViewApplication() {
+        // Note: nanogui automatically destroys controls and widgets. We don't have to manually delete them.
+    }
+
+
+private:
+    void createControlsWindow() {
         using namespace nanogui;
 
-        //First, we need to create a window context in which we will render both the interface and OpenGL canvas
-        Window *window = new Window(this, "OBJ Viewer");
-        window->setPosition(Vector2i(15, 15));
-        window->setLayout(new GroupLayout());
-
-
-        //OpenGL canvas initialization, we can control the background color and also its size
-        mCanvas = new OBJViewer::OBJViewerCanvas(window);
-        mCanvas->setBackgroundColor({100, 100, 100, 255});
-        mCanvas->setSize({400, 400});
-        new Label(window, "Right Click: Yaw and Pitch. Left Click: Pan. Mouse Wheel: Zoom", "sans-bold");
-        //This is how we add widgets, in this case, they are connected to the same window as the OpenGL canvas
-        Widget *tools = new Widget(window);
-        tools->setLayout(new BoxLayout(Orientation::Horizontal,
-                                       Alignment::Middle, 0, 5));
-
-        //then we start adding elements one by one as shown below
-        Button *b0 = new Button(tools, "Random Color");
-        b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
-
-        Button *b1 = new Button(tools, "Random Rotation");
-        b1->setCallback([this]() { mCanvas->setRotation(nanogui::Vector3f((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f)); });
-
-        //widgets demonstration
-        nanogui::GLShader mShader;
-
-        //Then, we can create another window and insert other widgets into it
-        Window *anotherWindow = new Window(this, "Controls");
-        anotherWindow->setPosition(Vector2i(500, 15));
-        anotherWindow->setLayout(new GroupLayout());
+        auto *controlsWindow = new Window(this, TXT_WINDOW_CONTROLS_TITLE);
+        controlsWindow->setPosition(Vector2i(WINDOW_SUBDIV_X, WINDOW_SUBDIV_Y));
+        controlsWindow->setLayout(new GroupLayout());
 
         // Button to load default cube
-        Button *button = new Button(anotherWindow, "New Cube");
-        button->setCallback([&] {
+        auto *btnNewCube = new Button(controlsWindow, TXT_BTN_NEW_CUBE);
+        btnNewCube->setCallback([&] {
             OBJMesh objMesh;
             objMesh.setCube();
             mCanvas->loadObjMesh(&objMesh);
         });
 
         // Exit button
-        button = new Button(anotherWindow, "Exit");
-        button->setCallback([&] {
+        auto *btnExit = new Button(controlsWindow, TXT_BTN_EXIT);
+        btnExit->setCallback([&] {
             exit(0);
         });
 
-        // Roll slider
-        new Label(anotherWindow, "Rotation on roll axis", "sans-bold");
-        Widget *panelRoll = new Widget(anotherWindow);
-        panelRoll->setLayout(new BoxLayout(Orientation::Horizontal,
-                                          Alignment::Middle, 0, 0));
-
-        //Roll the mesh using slider.
-        Slider *rollSlider = new Slider(panelRoll);
-        rollSlider->setValue(0);
-        rollSlider->setFixedWidth(150);
-        rollSlider->setCallback([&](float value) {
-            // the middle point should be 0 rad
-            // then we need to multiply by 2 to make it go from -1. to 1.
-            // then we make it go from -2*M_PI to 2*M_PI
-            float radians = (value - 0.5f)*2*2*M_PI;
-            //then use this to rotate on just one axis
-            mCanvas->setRotation(nanogui::Vector3f(mCanvas->getRotation().x(), radians, mCanvas->getRotation().z()));
-            //when you implement the other sliders and/or the Arcball, you need to keep track
-            //of the other rotations used for the second and third axis... It will not stay as 0.0f
-        });
-
-
-        // Saving and loading obj meshes
-        new Label(anotherWindow, "Load and save", "sans-bold");
-        tools = new Widget(anotherWindow);
+        // Saving and loading OBJ meshes
+        new Label(controlsWindow, TXT_LBL_LOAD_AND_SAVE, APP_FONT);
+        auto *tools = new Widget(controlsWindow);
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
-                                       Alignment::Middle, 0, 6));
-        Button *b = new Button(tools, "Open");
-        b->setCallback([&] {
+                                       Alignment::Middle, OBJ_VIEWER_WIDGET_MARGIN, OBJ_VIEWER_WIDGET_SPACING));
+
+        // Load new mesh
+        auto *btnOpen = new Button(tools, TXT_BTN_OPEN);
+        btnOpen->setCallback([&] {
 
             string dialogResult = file_dialog(
-                    { {"obj", "OBJ File"}}, false);
+                    {{FILE_TYPE_EXT, TXT_FILE_TYPE_NAME}}, false);
 
-            if(!dialogResult.empty()){
+            if (!dialogResult.empty()) {
                 mCanvas->loadObj(dialogResult); // Load the mesh
             }
         });
-        b = new Button(tools, "Save");
-        b->setCallback([&] {
-            string dialogResult = file_dialog(
-                    { {"obj", "OBJ File"}}, true);
 
-            if(!dialogResult.empty()){
+        // Save mesh
+        auto *btnSave = new Button(tools, TXT_BTN_SAVE);
+        btnSave->setCallback([&] {
+            string dialogResult = file_dialog(
+                    {{FILE_TYPE_EXT, TXT_FILE_TYPE_NAME}}, true);
+
+            if (!dialogResult.empty()) {
                 mCanvas->saveObj(dialogResult); // Save the mesh
             }
         });
 
         //Select shading mode
-        new Label(anotherWindow, "Shading Mode", "sans-bold");
-        ComboBox *combo = new ComboBox(anotherWindow, { "Flat shaded", "Smooth shaded", "Wireframe", "Shaded with mesh edges"} );
-        combo->setSelectedIndex(3);
-        combo->setWidth(200);
-        combo->setCallback([&](int value) {
-            if(value == 0){
-                mCanvas->setFlatShading();
+        new Label(controlsWindow, TXT_LBL_SHADING_MODE, APP_FONT);
+        auto *comboShading = new ComboBox(controlsWindow,
+                                          SHADING_MODES);
+        comboShading->setSelectedIndex(DEFAULT_SHADING_INDEX);
+        comboShading->setWidth(COMBO_SHADING_WIDTH);
+        comboShading->setCallback([&](int value) {
+            switch (value) {
+                case FLAT_SHADED_INDEX:
+                    mCanvas->setFlatShading();
+                    break;
+                case SMOOTH_SHADED_INDEX:
+                    mCanvas->setSmoothShading();
+                    break;
+                case WIREFRAME_SHADED_INDEX:
+                    mCanvas->setWireframeMode();
+                    break;
+                case SHADED_WITH_WIREFRAME_INDEX:
+                    mCanvas->setShadedWithMeshEdges();
+                    break;
             }
-            else if(value == 1){
-                mCanvas->setSmoothShading();
-            }
-            else if (value==2){
-                mCanvas->setWireframeMode();
-            }
-            else if (value==3){
-                mCanvas->setShadedWithMeshEdges();
-            }
-//            cout << "Combo box selected: " << value << endl;
         });
+    }
 
-        //Then, we can create another window and insert other widgets into it
-        Window *subdivisionWindow = new Window(this, "Subdivision");
-        subdivisionWindow->setPosition(Vector2i(500, 340));
+    void createSubdivisionWindow() {
+        using namespace nanogui;
+        auto *subdivisionWindow = new Window(this, TXT_WINDOW_SUBDIV_TITLE);
+        subdivisionWindow->setPosition(Vector2i(SUBDIV_WINDOW_X, SUBDIV_WINDOW_Y));
         subdivisionWindow->setLayout(new GroupLayout());
 
-        button = new Button(subdivisionWindow, "Reset");
-        button->setCallback([&] {
+        auto *btnReset = new Button(subdivisionWindow, TXT_BTN_RESET);
+        btnReset->setCallback([&] {
             mCanvas->resetToOriginalMesh();
         });
 
 
-        subdLabel = new Label(subdivisionWindow, "Sub-division count: 1", "sans-bold");
-        Slider *subdivSlider = new Slider(subdivisionWindow);
-        subdivSlider->setValue(1);
-        subdivSlider->setRange(std::pair<float ,float>(1,4));
-        subdivSlider->setFixedWidth(150);
-        subdivSlider->setValue(1);
+        lblSubdivisionCount = new Label(subdivisionWindow, TXT_LBL_SUBDIV_COUNT + std::to_string(SUBDIV_DEFAULT_COUNT),
+                                        APP_FONT);
+        auto *subdivSlider = new Slider(subdivisionWindow);
+        subdivSlider->setRange(std::pair<float, float>(SUBDIV_MIN_COUNT, SUBDIV_MAX_COUNT));
+        subdivSlider->setFixedWidth(SUBDIV_SLIDER_WIDTH);
+        subdivSlider->setValue(SUBDIV_DEFAULT_COUNT);
         subdivSlider->setCallback([&](float value) {
-            subdLabel->setCaption("Sub-division count: " + std::to_string((int)value));
-            subdivisionAmount = value;
+            lblSubdivisionCount->setCaption(TXT_LBL_SUBDIV_COUNT + std::to_string(static_cast<int>(value)));
+            subdivisionAmount = static_cast<int>(value);
         });
 
-        new Label(subdivisionWindow, "Loop Subdivision", "sans-bold");
-        button = new Button(subdivisionWindow, "Loop");
-        button->setCallback([&] {
+        new Label(subdivisionWindow, TXT_LBL_LOOP_SUBDIV, APP_FONT);
+        auto *btnLoopSubdiv = new Button(subdivisionWindow, TXT_BTN_LOOP_SUBDIV);
+        btnLoopSubdiv->setCallback([&] {
             mCanvas->resetToOriginalMesh();
-            for(int i = 0; i < subdivisionAmount; i++)
+            for (int i = 0; i < subdivisionAmount; i++)
                 mCanvas->performLoopSubdivision();
         });
 
 
-        button = new Button(subdivisionWindow, "Tessellate");
-        button->setCallback([&] {
+        auto *btnTessellate = new Button(subdivisionWindow, TXT_BTN_LOOP_TESSELLATE);
+        btnTessellate->setCallback([&] {
             mCanvas->resetToOriginalMesh();
-            for(int i = 0; i < subdivisionAmount; i++)
+            for (int i = 0; i < subdivisionAmount; i++)
                 mCanvas->performLoopTessellation();
         });
 
-
-
-        //Method to assemble the interface defined before it is called
-        performLayout();
     }
 
+    void createOBJViewerWindow() {
+        using namespace nanogui;
+        // Create window
+        Window *window = new Window(this, TXT_WINDOW_OBJ_VIEWER_TITLE);
+        window->setPosition(Vector2i(OBJ_VIEWER_OFFSET_X, OBJ_VIEWER_OFFSET_Y));
+        window->setLayout(new GroupLayout());
 
-    // Handles camera movements using mouse
-    virtual bool mouseMotionEvent(const Eigen::Vector2i &p, const Vector2i &rel, int button, int modifiers) override {
-        if (button == GLFW_MOUSE_BUTTON_3 ) {
-            //Get right click drag mouse event. Rotate about x and z axis.
-            mCanvas->setRotation(nanogui::Vector3f(mCanvas->getRotation().x()+rel.y()/100.0f, mCanvas->getRotation().y(), mCanvas->getRotation().z()-rel.x()/100.0f));
-            return true;
-        }
-        else if (button == GLFW_MOUSE_BUTTON_2 ){
-            // Do movements relative to camera rotation
-            Eigen::Matrix4f camRotation;
-            camRotation.setIdentity();
-            camRotation.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mCanvas->getRotation()[1], Eigen::Vector3f::UnitY()) *
-                                                               Eigen::AngleAxisf(mCanvas->getRotation()[2],  Eigen::Vector3f::UnitZ()) *
-                                                               Eigen::AngleAxisf(mCanvas->getRotation()[0], Eigen::Vector3f::UnitX()));
+        // Create GL Canvas
+        mCanvas = new OBJViewer::OBJViewerCanvas(window);
+        mCanvas->setBackgroundColor(CANVAS_BACKGROUND_COLOR);
+        mCanvas->setSize({CANVAS_WIDTH, CANVAS_HEIGHT});
 
+        // Create UI Elements
+        new Label(window, TXT_OBJ_VIEWER_TEXT, APP_FONT);
 
-            Eigen::Vector4f camOffset = camRotation * Eigen::Vector4f(rel.x()/100.0f,0,rel.y()/100.0f, 1) ;
-            mCanvas->setTarget(nanogui::Vector3f(mCanvas->getTarget().x()+camOffset.x(), mCanvas->getTarget().y()+camOffset.y(), mCanvas->getTarget().z() + camOffset.z()));
-            return true;
-        }
-        return false;
+        // Widget container
+        auto *tools = new Widget(window);
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, OBJ_VIEWER_WIDGET_MARGIN, OBJ_VIEWER_WIDGET_SPACING));
+
+        // Random color button
+        auto *btnRandomColor = new Button(tools, TXT_BTN_RANDOM_COLOR);
+        btnRandomColor->setCallback(
+                [this]() {
+                    std::uniform_int_distribution<> colorDistribution(0, UINT8_MAX);
+                    mCanvas->setBackgroundColor(
+                            Vector4i(colorDistribution(randomEngine), colorDistribution(randomEngine),
+                                     colorDistribution(randomEngine), UINT8_MAX));
+                });
+
+        // Random rotation button
+        Button *btnRandomRotation = new Button(tools, TXT_BTN_RANDOM_ROTATION);
+        btnRandomRotation->setCallback([this]() {
+            std::uniform_real_distribution<float> rotationDistribution(0.0f, M_PI * 2);
+            mCanvas->setRotation(
+                    nanogui::Vector3f(rotationDistribution(randomEngine),
+                                      rotationDistribution(randomEngine),
+                                      rotationDistribution(randomEngine)));
+        });
+
     }
 
-    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override {
-        // Zooming
-        mCanvas->setZoom( mCanvas->getZoom() + rel.y()/10.0f);
-        if (mCanvas->getZoom() < 0.1){
-            mCanvas->setZoom(0.1);
-        }
-        return true ;
-    }
-
-    virtual void drawContents() override {
-        // Update canvas MVP
-        mCanvas->updateMVP();
-    }
-
-    virtual void draw(NVGcontext *ctx) {
-        /* Draw the user interface */
-        Screen::draw(ctx);
-    }
-
-
-private:
     OBJViewer::OBJViewerCanvas *mCanvas;
-    float subdivisionAmount = 1;
-    Label* subdLabel = nullptr;
+    int subdivisionAmount = 1;
+    Label *lblSubdivisionCount = nullptr;
+
+    // Random number generator
+    std::random_device randomDevice;
+    std::default_random_engine randomEngine;
 };
 
 

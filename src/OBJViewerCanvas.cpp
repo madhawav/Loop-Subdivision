@@ -2,6 +2,7 @@
 // Created by madhawa on 2021-06-18.
 //
 
+#include "OBJViewerConstants.h"
 #include "OBJViewerCanvas.h"
 #include "WingedEdge/OBJMesh.h"
 #include "Subdivision/subd.h"
@@ -11,22 +12,6 @@
 #include <nanogui/opengl.h>
 #include <nanogui/glutil.h>
 #include <iostream>
-
-#define WIREFRAME_OVERLAY_EPS 0.01
-#define WIREFRAME_OVERLAY_EPS_WIDTH_FACTOR 0.005f
-#define MIN_ZOOM 0.1
-
-#define SHADER_NAME "a_smooth_shader"
-#define VERTEX_SHADER_FILE_NAME "StandardShading.vertexshader"
-#define FRAGMENT_SHADER_FILE_NAME "StandardShading.fragmentshader"
-#define SHADER_ATTR_VERTEX_POSITION "vertexPosition_modelspace"
-#define SHADER_ATTR_COLOR "color"
-#define SHADER_ATTR_VERTEX_NORMAL "vertexNormal_modelspace"
-#define SHADER_ATTR_LIGHT_POS "LightPosition_worldspace"
-#define SHADER_ATTR_MATRIX_VIEW "V"
-#define SHADER_ATTR_MATRIX_MODEL "M"
-#define SHADER_ATTR_MATRIX_MVP "MVP"
-#define SHADER_ATTR_DIFFUSE_CORRECTION "diffuseCorrection"
 
 
 OBJViewer::OBJViewerCanvas::OBJViewerCanvas(nanogui::Widget *parent) : nanogui::GLCanvas(parent) {
@@ -62,7 +47,7 @@ bool OBJViewer::OBJViewerCanvas::saveObj(const string &path) const {
     std::ofstream outFile;
     outFile.open(path);
     if (!outFile) {
-        std::cerr << "Unable to open file";
+        std::cerr << TXT_ERR_CANT_OPEN_FILE;
         return false;
     }
     return objMesh.saveFile(&outFile);
@@ -73,7 +58,7 @@ bool OBJViewer::OBJViewerCanvas::loadObj(const string &path) {
     std::ifstream inFile;
     inFile.open(path);
     if (!inFile) {
-        std::cerr << "Unable to open file";
+        std::cerr << TXT_ERR_CANT_OPEN_FILE;
         return false;
     }
 
@@ -252,7 +237,7 @@ void OBJViewer::OBJViewerCanvas::updateMVP() {
 
     // Compute projection matrix.
     P = nanogui::ortho(-halfWidth * 2 / mZoom, halfWidth * 2 / mZoom, -halfWidth * 2 / mZoom, halfWidth * 2 / mZoom, 0,
-                       halfWidth * 4 + 100);
+                       halfWidth * 4 + CAMERA_FAR_CLIP_EXTRA);
     MVP = P * V * M;
 }
 
