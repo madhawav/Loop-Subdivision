@@ -2,10 +2,10 @@
 // Created by madhawa on 2021-06-18.
 //
 
-#include "OBJViewer/OBJViewerConstants.h"
-#include "OBJViewer/OBJViewerCanvas.h"
-#include "WingedEdge/OBJMesh.h"
-#include "Subdivision/subd.h"
+#include <OBJViewer/OBJViewerConstants.h>
+#include <OBJViewer/OBJViewerCanvas.h>
+#include <WingedEdge/OBJMesh.h>
+#include <Subdivision/Subdivision.h>
 
 #include <nanogui/common.h>
 #include <nanogui/glcanvas.h>
@@ -13,6 +13,7 @@
 #include <nanogui/glutil.h>
 #include <iostream>
 
+using std::string;
 
 OBJViewer::OBJViewerCanvas::OBJViewerCanvas(nanogui::Widget *parent) : nanogui::GLCanvas(parent) {
     mRotation = Eigen::Vector3f(0, 0, 0); // Camera rotation
@@ -74,7 +75,7 @@ void OBJViewer::OBJViewerCanvas::performLoopSubdivision() {
         weMesh.fillOBJMesh(&originalMesh);
     }
     WingedEdge::OBJMesh subResult;
-    loopSubd(&subResult, &weMesh, true, true);
+    Subdivision::loopSubdivision(&subResult, &weMesh, true, true);
     loadObjMesh(&subResult);
     isSubdivided = true;
 }
@@ -84,7 +85,7 @@ void OBJViewer::OBJViewerCanvas::performLoopTessellation() {
         weMesh.fillOBJMesh(&originalMesh);
     }
     WingedEdge::OBJMesh subResult;
-    loopSubd(&subResult, &weMesh, false, false);
+    Subdivision::loopSubdivision(&subResult, &weMesh, false, false);
     loadObjMesh(&subResult);
     isSubdivided = true;
 }

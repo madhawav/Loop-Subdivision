@@ -17,5 +17,5 @@ add_subdirectory(lib/embed-resource)
 
 embed_resources(MyResources shader/vert.glsl shader/frag.glsl)
 
-add_executable(subd src/obj_view.cpp ${MyResources} src/WingedEdge/Edge.cpp src/WingedEdge/Vertex.cpp src/WingedEdge/Face.cpp src/WingedEdge/WEMesh.cpp src/WingedEdge/OBJMesh.cpp src/Subdivision/loopsubd.cpp src/OBJViewer/OBJViewerCanvas.cpp include/OBJViewer/OBJViewerCanvas.h include/OBJViewer/OBJViewerConstants.h src/OBJViewer/OBJViewerApplication.cpp include/OBJViewer/OBJViewerApplication.h)
+add_executable(subd src/obj_view.cpp ${MyResources} src/WingedEdge/Edge.cpp src/WingedEdge/Vertex.cpp src/WingedEdge/Face.cpp src/WingedEdge/WEMesh.cpp src/WingedEdge/OBJMesh.cpp src/Subdivision/LoopSubdivision.cpp src/OBJViewer/OBJViewerCanvas.cpp include/OBJViewer/OBJViewerCanvas.h include/OBJViewer/OBJViewerConstants.h src/OBJViewer/OBJViewerApplication.cpp include/OBJViewer/OBJViewerApplication.h)
 target_link_libraries(subd nanogui ${NANOGUI_EXTRA_LIBS})

@@ -5,22 +5,21 @@
 #include <nanogui/common.h>
 #include <nanogui/screen.h>
 #include <nanogui/glutil.h>
-#include <nanogui/glcanvas.h>
 #include <nanogui/widget.h>
 #include <nanogui/button.h>
 #include <nanogui/window.h>
 #include <nanogui/combobox.h>
 #include <nanogui/label.h>
 #include <nanogui/layout.h>
-#include <nanogui/messagedialog.h>
 #include <nanogui/slider.h>
 
-#include "OBJViewer/OBJViewerApplication.h"
-#include "OBJViewer/OBJViewerCanvas.h"
-#include "OBJViewer/OBJViewerConstants.h"
-#include "WingedEdge/OBJMesh.h"
+#include <OBJViewer/OBJViewerApplication.h>
+#include <OBJViewer/OBJViewerCanvas.h>
+#include <OBJViewer/OBJViewerConstants.h>
+#include <WingedEdge/OBJMesh.h>
 
 using namespace nanogui;
+using std::string;
 
 OBJViewer::OBJViewerApplication::OBJViewerApplication() : nanogui::Screen(nanogui::Vector2i(WINDOW_WIDTH, WINDOW_HEIGHT),
                                                                           TXT_APP_TITLE,

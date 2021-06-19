@@ -6,6 +6,7 @@
 #include <WingedEdge/WEMesh.h>
 #include <WingedEdge/Edge.h>
 #include <WingedEdge/OBJMesh.h>
+#include <Subdivision/Subdivision.h>
 
 
 /**
@@ -38,14 +39,9 @@ public:
     ExtendedEdge* extendedEdge2;
     ExtendedEdge* extendedEdge3;
 
-    WingedEdge::Edge* internalEdge12; //from midpoint of external edge 1 to midpoint of externaledge2
+    WingedEdge::Edge* internalEdge12; // From midpoint of external edge 1 to midpoint of external edge 2
     WingedEdge::Edge* internalEdge23;
     WingedEdge::Edge* internalEdge31;
-
-    WingedEdge::Face* face_e1mid_e2mid_cp;
-    WingedEdge::Face* face_e2mid_e3mid_cp;
-    WingedEdge::Face* face_e3mid_e1mid_cp;
-    WingedEdge::Face* face_e1mid_e2mid_e3mid;
 
     bool faceAdded;
 
@@ -54,7 +50,6 @@ public:
         extendedEdge1 = extendedEdge2 = extendedEdge3 = nullptr;
         internalEdge12 = internalEdge23 = internalEdge31 = nullptr;
         faceAdded = false;
-        face_e1mid_e2mid_e3mid = face_e1mid_e2mid_cp = face_e2mid_e3mid_cp = face_e3mid_e1mid_cp = nullptr;
     }
 };
 
@@ -77,14 +72,7 @@ WingedEdge::Vertex* getCommonVertex(WingedEdge::Edge* e1, WingedEdge::Edge* e2)
     assert(false);
 }
 
-/**
- * Performs loop subdivision on sourceMesh and populate tMesh using the result. Source mesh is unchanged.
- * @param tMesh OBJ mesh filled with results of method
- * @param sourceMesh Source mesh to be tesselated. This mesh is unchanged.
- * @param applyEdgeRule if true, edge vertex position is calculated using Edge Geometric Rule of Loop Subdivision. If false, midpoint of edge is chosen.
- * @param applyVertexRule if true, Vertex Geometric rule is applied. Otherwise, vertices are simply copied forward.
- */
-void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool applyVertexRule, bool applyEdgeRule){
+void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh *sourceMesh, bool applyVertexRule, bool applyEdgeRule) {
     WingedEdge::WEMesh _targetMesh;
     WingedEdge::WEMesh* targetMesh = &_targetMesh;
 
@@ -253,7 +241,7 @@ void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool a
 
             // Beta calculation
             float beta = 1.0/k * (5.0/8.0 -((3.0/8.0+1.0/4.0*cos(2*M_PI/k))*(3.0/8.0+1.0/4.0*cos(2*M_PI/k))));
-//        beta = 0.05;
+            //        beta = 0.05;
             float myX = sourceMesh->getVertices()[i].getX();
             float myY = sourceMesh->getVertices()[i].getY();
             float myZ = sourceMesh->getVertices()[i].getZ();
@@ -296,7 +284,7 @@ void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool a
         WingedEdge::Edge* edgesCW[] = {e1, e2, e3};
         for(int e = 0; e < 3; e++)
         {
-//            std::cout << e << std::endl;
+            //            std::cout << e << std::endl;
             if(!(extendedEdges[edgesCW[e] - sourceMesh->getEdges()].added)){
                 // The edge has not divided yet. Lets divide it and add it
 
@@ -364,13 +352,13 @@ void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool a
                 addedVertexCount++;
                 addedEdgeCount += 2;
                 std::cout << "Divided edge [" << edgesCW[e]->mVertOrigin->getX() << " " << edgesCW[e]->mVertOrigin->getY()  << " " << edgesCW[e]->mVertOrigin->getZ() <<
-                 "<< - >>" << edgesCW[e]->mVertDest->getX() << " " << edgesCW[e]->mVertDest->getY()  << " " << edgesCW[e]->mVertDest->getZ() <<
-                 "] as [" << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getY() <<
-                 ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getZ() << " << >> " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getX() << ", "
-                << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getY() <<", " << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getZ() << "] and [" <<
-                        extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getY() <<
-                        ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getZ() << " << >> " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getX() << ", "
-                        << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getY() <<", " << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getZ()<< std::endl;
+                          "<< - >>" << edgesCW[e]->mVertDest->getX() << " " << edgesCW[e]->mVertDest->getY()  << " " << edgesCW[e]->mVertDest->getZ() <<
+                          "] as [" << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getY() <<
+                          ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertOrigin->getZ() << " << >> " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getX() << ", "
+                          << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getY() <<", " << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeS->mVertDest->getZ() << "] and [" <<
+                          extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getX() << ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getY() <<
+                          ", " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertOrigin->getZ() << " << >> " <<  extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getX() << ", "
+                          << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getY() <<", " << extendedEdges[edgesCW[e] - sourceMesh->getEdges()].newEdgeE->mVertDest->getZ()<< std::endl;
             }
         }
 
@@ -421,7 +409,7 @@ void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool a
         targetMesh->getEdges()[addedEdgeCount].mVertDest = currentExtendedFace->extendedEdge1->newEdgeS->mVertDest;
         currentExtendedFace->internalEdge31 = &(targetMesh->getEdges()[addedEdgeCount]);
         addedEdgeCount++;
-//        std::cout << "Edges added " << addedEdgeCount << " " << newEdgeCount << std::endl;
+        //        std::cout << "Edges added " << addedEdgeCount << " " << newEdgeCount << std::endl;
     }
 
     assert(addedEdgeCount == newEdgeCount);
@@ -435,7 +423,7 @@ void loopSubd(WingedEdge::OBJMesh* tMesh, WingedEdge::WEMesh* sourceMesh, bool a
         ExtendedEdge* party1[3] = {currentExtendedFace->extendedEdge1, currentExtendedFace->extendedEdge2, currentExtendedFace->extendedEdge3};
         ExtendedEdge* party2[3] = {currentExtendedFace->extendedEdge2, currentExtendedFace->extendedEdge3, currentExtendedFace->extendedEdge1};
         WingedEdge::Edge* diagonalParty[3] = {currentExtendedFace->internalEdge12, currentExtendedFace->internalEdge23, currentExtendedFace->internalEdge31};
-//        Vertex* commonPoint = nullptr;
+        //        Vertex* commonPoint = nullptr;
         WingedEdge::Edge* party1Part[3];
         WingedEdge::Edge* party2Part[3];
 
