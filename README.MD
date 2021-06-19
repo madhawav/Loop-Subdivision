@@ -16,13 +16,14 @@ The project was done for the Computer Graphics course. Loop sub-division is impl
 ## How to compile and run the code? (Windows)
 1) Run `git submodule update --init --recursive`.
 2) Compile and run the code as follows.
-	```cmd
-	mkdir build
-	cd build
-	cmake -G "Visual Studio 15 2017 Win64" .. # Specify according to your visual studio version. Win64 is necessary for nanogui.
-	cmake --build . --config Debug
-	Debug\subd.exe
-	```
+    ```cmd
+    mkdir build
+    cd build
+    # In the next command, specify the version string according to your visual studio version. Win64 is necessary for nanogui.
+    cmake -G "Visual Studio 15 2017 Win64" .. 
+    cmake --build . --config Debug
+    Debug\subd.exe
+    ```
 	Note: If you encouter render issues, copy the StandardShading.fragmentshader file and the StandardShading.vertexshader file to the target directory.
 
 	
