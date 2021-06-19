@@ -5,7 +5,7 @@
 #include <WingedEdge/Face.h>
 #include <WingedEdge/Edge.h>
 
-WingedEdge::Edge * WingedEdge::Face::getEdge() {
+WingedEdge::Edge * WingedEdge::Face::getEdge() const {
     return mEdge;
 }
 

@@ -83,19 +83,19 @@ bool WingedEdge::OBJMesh::parseFile(std::ifstream* fs) {
 WingedEdge::OBJMesh::~OBJMesh() {
 }
 
-nanogui::MatrixXf WingedEdge::OBJMesh::getVertices() {
+nanogui::MatrixXf WingedEdge::OBJMesh::getVertices() const {
     return mVertices;
 }
 
-nanogui::MatrixXu WingedEdge::OBJMesh::getFaces() {
+nanogui::MatrixXu WingedEdge::OBJMesh::getFaces() const{
     return mFaces;
 }
 
-int WingedEdge::OBJMesh::getVertexCount() {
+int WingedEdge::OBJMesh::getVertexCount() const{
     return mVertexCount;
 }
 
-int WingedEdge::OBJMesh::getFaceCount() {
+int WingedEdge::OBJMesh::getFaceCount() const{
     return mFaceCount;
 }
 
@@ -111,7 +111,7 @@ void WingedEdge::OBJMesh::setMatrices(nanogui::MatrixXf vertices, nanogui::Matri
  * @param fs Output file stream
  * @return True if success. Otherwise false.
  */
-bool WingedEdge::OBJMesh::saveFile(std::ofstream *fs) {
+bool WingedEdge::OBJMesh::saveFile(std::ofstream *fs) const{
     // Save metadata
     *fs << "# " << mVertexCount << " " << mFaceCount << std::endl;
 

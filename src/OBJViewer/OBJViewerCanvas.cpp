@@ -187,7 +187,7 @@ void OBJViewer::OBJViewerCanvas::setTarget(nanogui::Vector3f vTarget) {
     mTarget = vTarget;
 }
 
-void OBJViewer::OBJViewerCanvas::setShadedWithMeshEdges() {
+void OBJViewer::OBJViewerCanvas::switchToSmoothWithWireframeShading() {
     weMesh.populateSmoothShadingMatrices();
     weMesh.populateExpandedVertexMatrix(wireframeOverlayEpsilon);
     refreshGeometry();
@@ -196,7 +196,7 @@ void OBJViewer::OBJViewerCanvas::setShadedWithMeshEdges() {
     flatShading = false;
 }
 
-void OBJViewer::OBJViewerCanvas::setWireframeMode() {
+void OBJViewer::OBJViewerCanvas::switchToWireframeShading() {
     weMesh.populateSmoothShadingMatrices();
     refreshGeometry();
     drawWireframe = true;
@@ -204,7 +204,7 @@ void OBJViewer::OBJViewerCanvas::setWireframeMode() {
     flatShading = false;
 }
 
-void OBJViewer::OBJViewerCanvas::setSmoothShading() {
+void OBJViewer::OBJViewerCanvas::switchToSmoothShading() {
     weMesh.populateSmoothShadingMatrices();
     refreshGeometry();
     drawWireframe = false;
@@ -212,7 +212,7 @@ void OBJViewer::OBJViewerCanvas::setSmoothShading() {
     flatShading = false;
 }
 
-void OBJViewer::OBJViewerCanvas::setFlatShading() {
+void OBJViewer::OBJViewerCanvas::switchToFlatShading() {
     weMesh.populateFlatShadingMatrices();
     refreshGeometry();
     drawWireframe = false;

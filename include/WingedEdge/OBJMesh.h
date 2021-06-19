@@ -31,7 +31,7 @@ namespace WingedEdge {
          * @param fs
          * @return
          */
-        bool saveFile(std::ofstream *fs);
+        bool saveFile(std::ofstream *fs) const;
 
         /**
          * Set the matrix of vertices and faces of the mesh. Used by WingedEdge to convert back to an OBJ Mesh for saving purpose.
@@ -49,25 +49,25 @@ namespace WingedEdge {
          * Retrieve matrix of vertices
          * @return 3xn Matrix
          */
-        nanogui::MatrixXf getVertices();
+        nanogui::MatrixXf getVertices() const;
 
         /**
          * Retrieve matrix of faces (Vertex indices)
          * @return 3xt Matrix
          */
-        nanogui::MatrixXu getFaces();
+        nanogui::MatrixXu getFaces() const;
 
         /**
          * Retrieve number of vertices
          * @return
          */
-        int getVertexCount();
+        int getVertexCount() const;
 
         /**
          * Retrieve number of faces
          * @return
          */
-        int getFaceCount();
+        int getFaceCount() const;
 
     private:
         int mVertexCount;

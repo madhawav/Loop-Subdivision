@@ -113,23 +113,23 @@ namespace OBJViewer {
         /**
          * Switch to Smooth Shaded with Wireframes mode
          */
-        void setShadedWithMeshEdges();
+        void switchToSmoothWithWireframeShading();
 
         /**
          * Switch to Wireframe mode
          */
-        void setWireframeMode();
+        void switchToWireframeShading();
 
 
         /**
          * Switch to smooth shading mode
          */
-        void setSmoothShading();
+        void switchToSmoothShading();
 
         /**
          * Switch to flat shading mode
          */
-        void setFlatShading();
+        void switchToFlatShading();
 
         /**
          * Update model, view and projection matrices

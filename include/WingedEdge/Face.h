@@ -20,7 +20,7 @@ namespace WingedEdge {
          * Get an edge adjacent to face
          * @return
          */
-        Edge* getEdge();
+        Edge* getEdge() const;
 
         /**
          * Set an edge adjacent to face

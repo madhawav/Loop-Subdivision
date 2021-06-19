@@ -17,6 +17,6 @@ namespace Subdivision {
      * @param applyEdgeRule if true, edge vertex position is calculated using Edge Geometric Rule of Loop Subdivision. If false, midpoint of edge is chosen.
      * @param applyVertexRule if true, Vertex Geometric rule is applied. Otherwise, vertices are simply copied forward.
      */
-    void loopSubdivision(WingedEdge::OBJMesh *tMesh, WingedEdge::WEMesh *sourceMesh, bool applyVertexRule,
+    void loopSubdivision(WingedEdge::OBJMesh *tMesh, const WingedEdge::WEMesh *sourceMesh, bool applyVertexRule,
                          bool applyEdgeRule);
 }

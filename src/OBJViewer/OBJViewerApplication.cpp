@@ -142,16 +142,16 @@ void OBJViewer::OBJViewerApplication::createControlsWindow() {
     comboShading->setCallback([&](int value) {
         switch (value) {
             case FLAT_SHADED_INDEX:
-                mCanvas->setFlatShading();
+                mCanvas->switchToFlatShading();
                 break;
             case SMOOTH_SHADED_INDEX:
-                mCanvas->setSmoothShading();
+                mCanvas->switchToSmoothShading();
                 break;
             case WIREFRAME_SHADED_INDEX:
-                mCanvas->setWireframeMode();
+                mCanvas->switchToWireframeShading();
                 break;
             case SHADED_WITH_WIREFRAME_INDEX:
-                mCanvas->setShadedWithMeshEdges();
+                mCanvas->switchToSmoothWithWireframeShading();
                 break;
         }
     });
