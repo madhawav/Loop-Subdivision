@@ -5,3 +5,5 @@ Makefile
 CMakeFiles
 build
 models
+shader/frag.c
+shader/vert.c
