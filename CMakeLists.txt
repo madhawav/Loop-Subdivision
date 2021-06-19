@@ -20,14 +20,11 @@ add_definitions(${NANOGUI_EXTRA_DEFS})
 configure_file(glsl/StandardShading.fragmentshader StandardShading.fragmentshader COPYONLY)
 configure_file(glsl/StandardShading.vertexshader StandardShading.vertexshader COPYONLY)
 
-set(Boost_USE_STATIC_LIBS ON) 
-include_directories(${Boost_INCLUDE_DIRS}) 
-
 add_subdirectory(lib/embed-resource)
 include_directories(lib/embed-resource)
 
 embed_resources(MyResources shader/vert.glsl shader/frag.glsl)
 
 add_executable(subd src/obj_view.cpp ${MyResources} src/WingedEdge/Edge.cpp src/WingedEdge/Vertex.cpp src/WingedEdge/Face.cpp src/WingedEdge/WEMesh.cpp src/WingedEdge/OBJMesh.cpp src/Subdivision/LoopSubdivision.cpp src/OBJViewer/OBJViewerCanvas.cpp include/OBJViewer/OBJViewerCanvas.h include/OBJViewer/OBJViewerConstants.h src/OBJViewer/OBJViewerApplication.cpp include/OBJViewer/OBJViewerApplication.h)
-# embed-resource uses Boost FileSystem library
-target_link_libraries(subd nanogui ${NANOGUI_EXTRA_LIBS} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+
+target_link_libraries(subd nanogui ${NANOGUI_EXTRA_LIBS})

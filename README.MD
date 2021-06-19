@@ -15,8 +15,7 @@ The project was done for the Computer Graphics course. Loop sub-division is impl
 
 ## How to compile and run the code? (Windows)
 1) Run `git submodule update --init --recursive`.
-2) Download and install the 64bit version of the boost library compatible with the Visual C++ version you use. Boost binaries are [available here](https://sourceforge.net/projects/boost/files/boost-binaries/1.64.0/).
-3) Compile and run the code as follows.
+2) Compile and run the code as follows.
 	```cmd
 	mkdir build
 	cd build
