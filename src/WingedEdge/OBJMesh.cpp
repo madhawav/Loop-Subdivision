@@ -126,6 +126,7 @@ bool WingedEdge::OBJMesh::saveFile(std::ofstream *fs) const{
     for(int i = 0; i < mFaceCount; i++){
         *fs << "f " << (mFaces(0, i)+1) << " " << (mFaces(1, i)+1)<< " " << (mFaces(2, i)+1) << std::endl;
     }
+	return true;
 }
 
 /**

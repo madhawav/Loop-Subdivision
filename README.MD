@@ -2,16 +2,31 @@
 The project was done for the Computer Graphics course. Loop sub-division is implemented using the Winged Edge data structure.
 ![preview](doc/preview.png)
 
-## How to compile and run the code?
+## How to compile and run the code? (Linux)
 1) Run `git submodule update --init --recursive`.
 2) Compile and run the code as follows.
-    ```bash
-    mkdir build
-    cd build
-    cmake ../
-    make
-    ./subd
-    ```
+	```bash
+	mkdir build
+	cd build
+	cmake ../
+	make
+	./subd
+	```
+
+## How to compile and run the code? (Windows)
+1) Run `git submodule update --init --recursive`.
+2) Download and install the 64bit version of the boost library compatible with the Visual C++ version you use. Boost binaries are [available here](https://sourceforge.net/projects/boost/files/boost-binaries/1.64.0/).
+3) Compile and run the code as follows.
+	```cmd
+	mkdir build
+	cd build
+	cmake -G "Visual Studio 15 2017 Win64" .. # Specify according to your visual studio version. Win64 is necessary for nanogui.
+	cmake --build . --config Debug
+	Debug\subd.exe
+	```
+	Note: If you encouter render issues, copy the StandardShading.fragmentshader file and the StandardShading.vertexshader file to the target directory.
+
+	
 ## Notes on Implementation of Subdivision
  1) To perform subdivision, choose level of subdivision using the Subdivision count slider and click "Loop".
  2) To perform only tessellation used by Loop Subdivision (no vertex or edge rule applied), select appropriate subdivision count from slider and click "Tessellate". Switch to wireframe view to view the tessellation. 

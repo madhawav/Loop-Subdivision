@@ -18,6 +18,10 @@
 #include <OBJViewer/OBJViewerConstants.h>
 #include <WingedEdge/OBJMesh.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+
 using namespace nanogui;
 using std::string;
 
@@ -155,6 +159,7 @@ void OBJViewer::OBJViewerApplication::createControlsWindow() {
                 break;
         }
     });
+	
 }
 
 void OBJViewer::OBJViewerApplication::createSubdivisionWindow() {

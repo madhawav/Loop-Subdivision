@@ -8,6 +8,9 @@
 #include <WingedEdge/OBJMesh.h>
 #include <Subdivision/Subdivision.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 // Uncomment to do extra logging
 //#define LOG_EXTRA
 
@@ -557,8 +560,8 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, const WingedEdge::
     //Each triangle face gets divided into 4
     int newFaceCount = sourceMesh->getFaceCount() * 4;
 
-    ExtendedFace extendedFaces[sourceMesh->getFaceCount()];
-    ExtendedEdge extendedEdges[sourceMesh->getEdgeCount()];
+    ExtendedFace* extendedFaces = new ExtendedFace[sourceMesh->getFaceCount()];
+    ExtendedEdge* extendedEdges = new ExtendedEdge[sourceMesh->getEdgeCount()];
 
     // Allocate resources to hold subdivided mesh
     targetMesh->allocateVertices(newVertexCount);
@@ -591,6 +594,9 @@ void Subdivision::loopSubdivision(WingedEdge::OBJMesh *tMesh, const WingedEdge::
 
     // Assign vertices and face indices to triangular mesh
     tMesh->setMatrices(positions, faceIndices);
+
+	delete[] extendedFaces;
+	delete[] extendedEdges;
 }
 
 
