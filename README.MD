@@ -6,9 +6,10 @@ Implements proper vertex normal / face normal calculation to support smooth/flat
 
 ![preview](doc/preview.png)
 
-**The preferred compiler is GNU C++ on Linux/WSL. The Visual C++ compiler is supported as well.**
-
 ## How to compile and run the code?
+Preferred compiler is GNU C++ compiler.
+Tested with GNU C++ compiler on Linux and Visual C++ compiler on Windows.
+
 - For Linux users
     1) Run `git submodule update --init --recursive`.
     2) Compile and run the code as follows.
