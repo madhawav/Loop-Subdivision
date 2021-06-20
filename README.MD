@@ -1,4 +1,4 @@
-# OBJ View with Subdivision
+# OBJ Viewer with Loop Subdivision
 The project is for the Computational Geometry/Computer Graphics graduate course. 
 This is a 3D mesh viewer with support for parsing and serializing OBJ meshes. 
 Implements loop subdivision using the Winged Edge data structure. 
